@@ -1,0 +1,6 @@
+
+(library
+ (name gfx_jsoo)
+ (implements gfx)
+ (preprocess (pps js_of_ocaml-ppx))
+)

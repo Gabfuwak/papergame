@@ -1,0 +1,15 @@
+(alias
+   (name sdl)
+   (deps prog/game_sdl.exe (glob_files resources/*))
+)
+
+(alias
+   (name js)
+   (deps prog/game_js.bc.js (glob_files resources/files/*))
+)
+
+
+(alias
+   (name default)
+   (deps (alias js))
+)
