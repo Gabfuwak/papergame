@@ -6,6 +6,12 @@ type texture =
 let white = Color (Gfx.color 255 255 255 255)
 let black = Color (Gfx.color 0 0 0 255)
 
+type vec2 = {
+  mutable x: float;
+  mutable y: float;
+
+}
+
 type config = {
   (* Informations des touches *)
   key_left: string;
@@ -18,14 +24,42 @@ type config = {
   window_surface : Gfx.surface;
   ctx : Gfx.context;
 
-  textures : texture array;
-  mutable curr_color : int;
   mutable time_acc : float;
   mutable last_frame_time : float;
+
+  (* Consts *)
+  textures : texture array;
+
+  (* State *)
+  mutable curr_color : int;
+  keypresses : (string, bool) Hashtbl.t;
+  mutable player_pos : vec2;
 }
 
-(* On crée une fenêtre *)
+let handle_inputs cfg =
+  match Gfx.poll_event () with
+  | NoEvent -> ();
+  | KeyDown key -> Hashtbl.replace cfg.keypresses key true;
+  | KeyUp key -> Hashtbl.add cfg.keypresses key false;
+  | _ -> ()
 
+let is_key_pressed cfg key =
+  try
+    Hashtbl.find cfg.keypresses key
+  with Not_found ->
+    false 
+
+let handle_logic cfg =
+  if is_key_pressed cfg cfg.key_up then
+    cfg.player_pos.y <- cfg.player_pos.y -. 5.0;
+  if is_key_pressed cfg cfg.key_down then
+    cfg.player_pos.y <- cfg.player_pos.y +. 5.0;
+  if is_key_pressed cfg cfg.key_right then
+    cfg.player_pos.x <- cfg.player_pos.x +. 5.0;
+  if is_key_pressed cfg cfg.key_left then
+    cfg.player_pos.x <- cfg.player_pos.x -. 5.0;
+ ()
+  
 let draw_rect config texture x y w h =
   match texture with
   | Color c ->
@@ -39,6 +73,9 @@ let update cfg dt =
   
   cfg.time_acc <- cfg.time_acc +. frame_delta;
   
+  handle_inputs cfg;
+  handle_logic cfg;
+  
   if cfg.time_acc >= 1000.0 then begin
     cfg.curr_color <- (cfg.curr_color + 1) mod 3;
     cfg.time_acc <- cfg.time_acc -. 1000.0;
@@ -47,7 +84,7 @@ let update cfg dt =
   
   let (width, height) = Gfx.get_window_size cfg.window in
   draw_rect cfg white 0 0 width height;
-  draw_rect cfg cfg.textures.(cfg.curr_color) 100 100 200 200;
+  draw_rect cfg cfg.textures.(cfg.curr_color) (int_of_float cfg.player_pos.x) (int_of_float cfg.player_pos.y) 200 200;
   Gfx.commit cfg.ctx
 
 let run keys =
@@ -69,6 +106,8 @@ let run keys =
     curr_color = 0;
     time_acc = 0.0;
     last_frame_time = 0.0;
+    keypresses = Hashtbl.create 10;
+    player_pos = {x=100.0; y = 100.0};
   } in
 
   Gfx.main_loop (fun dt -> update cfg dt; None) (fun () -> ())
