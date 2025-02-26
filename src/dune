@@ -1,6 +1,6 @@
 (include_subdirs unqualified)
 (library
   (name game)
-  (libraries ecs gfx)
+  (libraries gfx)
 )
 
