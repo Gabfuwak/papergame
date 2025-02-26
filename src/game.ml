@@ -1,16 +1,7 @@
-(* Les types des textures qu'on veut dessiner à l'écran *)
-type texture =
-    Color of Gfx.color
-  | Image of Gfx.surface
+open Types
 
 let white = Color (Gfx.color 255 255 255 255)
 let black = Color (Gfx.color 0 0 0 255)
-
-type vec2 = {
-  mutable x: float;
-  mutable y: float;
-
-}
 
 type config = {
   (* Informations des touches *)
@@ -35,7 +26,7 @@ type config = {
   (* State *)
   mutable curr_color : int;
   keypresses : (string, bool) Hashtbl.t;
-  mutable player_pos : vec2;
+  mutable player_pos : Vector.t;
   mutable test : string;
   mutable should_stop : bool;
 }
