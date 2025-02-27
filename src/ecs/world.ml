@@ -7,11 +7,13 @@ module State = struct
     position_store : (Entity.t, Position.t) Hashtbl.t;
     movable_store : (Entity.t, Movable.t) Hashtbl.t;
     drawable_store : (Entity.t, Drawable.t) Hashtbl.t;
+    controllable_store : (Entity.t, Controllable.t) Hashtbl.t;
   }
   
   let create () = {
     position_store = Hashtbl.create 64;
     movable_store = Hashtbl.create 64;
+    controllable_store = Hashtbl.create 64;
     drawable_store = Hashtbl.create 64;
   }
 end
@@ -22,14 +24,15 @@ type t = {
   window_surface : Gfx.surface;
   ctx : Gfx.context;
   key_names : (string, string) Hashtbl.t;
+  mutable should_stop : bool;
+  mutable exit_message : string;
   
   (* Input state *)
   keypresses : (string, bool) Hashtbl.t;
   
   (* Time tracking *)
-  mutable time_acc : float;
+  mutable dt : float;
   mutable last_frame_time : float;
-  mutable should_stop : bool;
   
   (* game data *)
   resources : Resources.t;
@@ -52,10 +55,28 @@ let create window keys =
     key_names = k_names;
     
     keypresses = Hashtbl.create 10;
-    time_acc = 0.0;
+    dt = 0.0;
     last_frame_time = 0.0;
     should_stop = false;
+    exit_message = "Still running.. If this is the exit message something very bad happened.";
     
     resources = Resources.create ();
     state = State.create ();
   }
+
+
+let rec handle_events world =
+  match Gfx.poll_event () with
+  | NoEvent -> ();
+  | KeyDown key -> 
+      Hashtbl.replace world.keypresses key true;
+      handle_events world
+  | KeyUp key -> 
+      Hashtbl.add world.keypresses key false;
+      handle_events world
+  | _ -> handle_events world
+
+
+
+
+  

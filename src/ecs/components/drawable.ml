@@ -1,6 +1,8 @@
 open Types
 
 type t = {
-  screen_pos : Vector.t;
-  tex : texture;
+  mutable screen_pos : Vector.t;
+  height : int;
+  width : int;
+  mutable tex : texture;
 }

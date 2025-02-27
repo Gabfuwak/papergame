@@ -11,6 +11,7 @@ type t = {
   mutable textures_array : string array;
   mutable curr_texture : int;
   mutable test : string;
+  mutable time_acc : float;
 
 }
 
@@ -21,6 +22,7 @@ let create () = {
   textures_array = [||];
   curr_texture = 0;
   test = "Not initialized";
+  time_acc = 0.0;
 }
 
 let parse_tileset tileset =
