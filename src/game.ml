@@ -100,7 +100,7 @@ let run keys =
   } in
   *)
 
-  let world = World.create window in
+  let world = World.create window keys in
    
   let tileset_res = Gfx.load_file "resources/files/tile_set.txt" in
   Gfx.main_loop 

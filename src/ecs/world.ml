@@ -36,15 +36,20 @@ type t = {
   state : State.t;
 }
 
-let create window = 
+let create window keys = 
   let context = Gfx.get_context window in
   let surface = Gfx.get_surface window in
+  let k_names = Hashtbl.create 4 in
+  Hashtbl.add k_names "left" keys.(0);
+  Hashtbl.add k_names "right" keys.(1);
+  Hashtbl.add k_names "up" keys.(2);
+  Hashtbl.add k_names "down" keys.(3);
   
   {
     window;
     window_surface = surface;
     ctx = context;
-    key_names = Hashtbl.create 10;
+    key_names = k_names;
     
     keypresses = Hashtbl.create 10;
     time_acc = 0.0;
