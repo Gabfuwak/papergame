@@ -31,13 +31,15 @@ let render_entity world entity position drawable =
         drawable.width drawable.height
       
   | Image surface ->
-      Gfx.blit world.ctx world.window_surface surface
+      Gfx.blit_scale world.ctx world.window_surface surface
         (int_of_float position.pos.x) (int_of_float position.pos.y)
+        drawable.width drawable.height
       
   | Animation anim ->
       let current_frame = anim.frames.(anim.current_frame) in
-      Gfx.blit world.ctx world.window_surface current_frame
+      Gfx.blit_scale world.ctx world.window_surface current_frame
         (int_of_float position.pos.x) (int_of_float position.pos.y)
+        drawable.width drawable.height
 
 let update world =
   Gfx.set_color world.ctx (Gfx.color 255 255 255 255);
