@@ -6,7 +6,7 @@ from collections import defaultdict
 
 MIN_ATLAS_WIDTH = 256
 MAX_ATLAS_WIDTH = 16384 
-OUTPUT_DIR = "."
+OUTPUT_DIR = "files"
 ATLAS_FILE = "tileset.png"
 METADATA_FILE = "tileset.txt"
 DEFAULT_FRAMERATE = 12

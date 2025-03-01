@@ -1,46 +1,55 @@
+(* 
+   TODO: 
+      - Camera placement handling so world pos and screen pos are not the same. 
+      - Z index handling
+*)
+
+open Types
+open Drawable
 open World
 open Position
-open Drawable
-open Vector
-open Types
 
-let white = Color (Gfx.color 255 255 255 255)
-let black = Color (Gfx.color 0 0 0 255)
+let update_animation animation dt =
+  match animation with
+  | Animation anim ->
+      anim.accumulated_time <- anim.accumulated_time +. dt;
+      let frame_duration = 1000.0 /. anim.framerate in
+      while anim.accumulated_time >= frame_duration do
+        anim.accumulated_time <- anim.accumulated_time -. frame_duration;
+        anim.current_frame <- (anim.current_frame + 1) mod (Array.length anim.frames)
+      done
+  | _ -> () (* Not an animation, nothing to update *)
 
-let draw_rect world texture x y w h =
-  match texture with
-  | Color c ->
-      Gfx.set_color world.ctx c;
-      Gfx.fill_rect world.ctx world.window_surface x y w h
-  | Image i ->
-      Gfx.blit_scale world.ctx world.window_surface i x y w h
-
-(* Helper function to draw a single entity *)
-let draw_entity world drawable position =
-  (* FIXME *)
-  drawable.screen_pos <- position.pos;
-  let pos_x = int_of_float drawable.screen_pos.x in
-  let pos_y = int_of_float drawable.screen_pos.y in
-  draw_rect world drawable.tex pos_x pos_y drawable.width drawable.height;
-  ()
+let render_entity world entity position drawable =
+  update_animation drawable.texture world.dt;
+  
+  match drawable.texture with
+  | Color color ->
+      Gfx.set_color world.ctx color;
+      Gfx.fill_rect world.ctx world.window_surface 
+        (int_of_float position.pos.x) (int_of_float position.pos.y) 
+        drawable.width drawable.height
+      
+  | Image surface ->
+      Gfx.blit world.ctx world.window_surface surface
+        (int_of_float position.pos.x) (int_of_float position.pos.y)
+      
+  | Animation anim ->
+      let current_frame = anim.frames.(anim.current_frame) in
+      Gfx.blit world.ctx world.window_surface current_frame
+        (int_of_float position.pos.x) (int_of_float position.pos.y)
 
 let update world =
-  (* Clear the screen - you might want to use a background color *)
-  let (width, height) = Gfx.get_window_size world.window in
-  draw_rect world white 0 0 width height;
+  Gfx.set_color world.ctx (Gfx.color 255 255 255 255);
+  Gfx.fill_rect world.ctx world.window_surface 0 0 800 600;
   
-  (* Iterate through all drawable entities *)
   Hashtbl.iter (fun entity drawable ->
-    drawable.tex <- Hashtbl.find world.resources.textures "extra_character_a.png";
-    (* TODO: make a difference between screen pos and world pos, for example a health bar would not have a Position but it would be drawable with a static screen pos *)
     match Hashtbl.find_opt world.state.position_store entity with
-    | Some position ->
-        Gfx.debug "Drawing entity number %d\n" entity;
-        draw_entity world drawable position
-    | None ->
+    | Some position -> render_entity world entity position drawable
+    | None -> 
+        (* TODO: fix this to handle ui elements with no world pos *)
         world.should_stop <- true;
-        world.exit_message <- "Entity " ^ string_of_int entity ^ " was drawn without a position";
-        ()
+        world.exit_message <- "Error: tried to draw entity " ^ string_of_int entity ^ " but it does not gave a position.\n";
   ) world.state.drawable_store;
   
   Gfx.commit world.ctx

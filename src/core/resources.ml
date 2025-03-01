@@ -1,77 +1,100 @@
 open Types
+
 type t = {
-
   textures : (string, Types.texture) Hashtbl.t;
-  
   files : (string, string) Hashtbl.t;
-  
   fonts : (string, Gfx.font) Hashtbl.t;
-
-  (* This is just debug, will be removed *)
-  mutable textures_array : string array;
-  mutable curr_texture : int;
-  mutable test : string;
-  mutable time_acc : float;
-
 }
 
 let create () = {
   textures = Hashtbl.create 10;
   files = Hashtbl.create 10;
   fonts = Hashtbl.create 10;
-  textures_array = [||];
-  curr_texture = 0;
-  test = "Not initialized";
-  time_acc = 0.0;
 }
 
-let parse_tileset tileset =
-  (* Split the tileset string into lines to get image filenames *)
-  let filenames = String.split_on_char '\n' tileset in
-  (* Filter out any empty lines *)
-  List.filter (fun s -> String.length s > 0) filenames
+let parse_atlas_metadata content =
+  let lines = String.split_on_char '\n' content in
+  let atlas_items = Hashtbl.create (List.length lines) in
+  
+  List.iter (fun line ->
+    if String.length line > 0 then
+      let parts = String.split_on_char ':' line in
+      match parts with
+      | "tile" :: name :: x :: y :: width :: height :: [] ->
+          let region = {
+            x = int_of_string x;
+            y = int_of_string y;
+            width = int_of_string width;
+            height = int_of_string height;
+          } in
+          Hashtbl.add atlas_items name (StaticTile region)
+      | "anim" :: name :: x :: y :: width :: height :: frames :: framerate :: [] ->
+          let region = {
+            x = int_of_string x;
+            y = int_of_string y;
+            width = int_of_string width;
+            height = int_of_string height;
+          } in
+          let anim = AnimationItem {
+            base_region = region;
+            frames = int_of_string frames;
+            framerate = float_of_string framerate;
+          } in
+          Hashtbl.add atlas_items name anim
+      | _ -> 
+          Gfx.debug "Invalid atlas metadata line: %s\n" line
+  ) lines;
+  
+  atlas_items
 
-let process_tileset_resources res_record resources =
-  (* Store each image in the hashtable by its filename *)
-  List.iter 
-        (fun (filename, res) -> 
-          let surface = Gfx.get_resource res in
-          let texture = Image surface in
-          Hashtbl.add res_record.textures filename texture) 
-        resources;
-  (* Create an array of the loaded textures for cycling display *)
-  let filenames = Array.of_list (
-    List.map 
-      (fun (filename, _) -> filename) 
-      resources
-  ) in
-  
-  (* Update the textures array with our loaded images *)
-  res_record.textures_array <- filenames;
-  res_record.test <- "Loaded " ^ (string_of_int (List.length resources)) ^ " images"; 
-  ()
+let extract_region ctx atlas region =
+  let surface = Gfx.create_surface ctx region.width region.height in
+  Gfx.blit_full ctx surface atlas 
+    region.x region.y region.width region.height  (* Source region *)
+    0 0 region.width region.height;  (* Destination region (full surface) *)
+  surface
 
-let load_tileset res_record ctx tileset =
-  let filenames = parse_tileset tileset in
+let process_atlas resources ctx atlas metadata =
+  let atlas_items = parse_atlas_metadata metadata in
   
-  (* Start loading all images at once *)
-  let image_resources = List.map 
-    (fun filename -> 
-      (filename, Gfx.load_image ctx ("resources/images/" ^ filename))) 
-    filenames in
-  
-  (* Check if all resources are ready *)
-  let rec check_all_ready resources =
-    List.for_all (fun (_, res) -> Gfx.resource_ready res) resources
-  in
-  
-  (* Set up the main loop to wait until all resources are ready *)
-  Gfx.main_loop
-    (fun _dt -> 
-      if check_all_ready image_resources then
-        Some image_resources
-      else
-        None)
-    (fun resources ->
-      process_tileset_resources res_record resources;
-    )
+  Hashtbl.iter (fun name item ->
+    match item with
+    | StaticTile region ->
+        let surface = extract_region ctx atlas region in
+        Gfx.debug "Added StaticTile %s\n" name;
+        Hashtbl.add resources.textures name (Image surface)
+        
+    | AnimationItem { base_region; frames; framerate } ->
+        let frame_surfaces = Array.init frames (fun i ->
+          let frame_region = {
+            x = base_region.x + i * base_region.width;
+            y = base_region.y;
+            width = base_region.width;
+            height = base_region.height;
+          } in
+          extract_region ctx atlas frame_region
+        ) in
+        
+        let animation = Animation {
+          frames = frame_surfaces;
+          framerate;
+          current_frame = 0;
+          accumulated_time = 0.0;
+        } in
+        
+        Gfx.debug "Added animation %s\n" name;
+        Hashtbl.add resources.textures name animation
+  ) atlas_items
+
+let init_atlas_loading ctx =
+  let atlas_res = Gfx.load_image ctx "resources/images/tileset.png" in
+  let metadata_res = Gfx.load_file "resources/files/tileset.txt" in
+  (atlas_res, metadata_res)
+
+let are_resources_ready (atlas_res, metadata_res) =
+  if Gfx.resource_ready atlas_res && Gfx.resource_ready metadata_res then
+    let atlas = Gfx.get_resource atlas_res in
+    let metadata = Gfx.get_resource metadata_res in
+    Some (atlas, metadata)
+  else
+    None
