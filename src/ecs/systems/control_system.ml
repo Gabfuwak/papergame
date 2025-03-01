@@ -1,6 +1,7 @@
 open World
 open Position  
 open Movable 
+open Controllable
 open Vector
 
 let is_key_pressed world key =
@@ -27,15 +28,15 @@ let update world =
         let velocity = Vector.create 0.0 0.0 in
         
         if is_key_pressed world "up" then
-          velocity.y <- velocity.y -. 5.0;
+          velocity.y <- velocity.y -. controllable.speed;
         if is_key_pressed world "down" then
-          velocity.y <- velocity.y +. 5.0;
+          velocity.y <- velocity.y +. controllable.speed;
         if is_key_pressed world "right" then
-          velocity.x <- velocity.x +. 5.0;
+          velocity.x <- velocity.x +. controllable.speed;
         if is_key_pressed world "left" then
-          velocity.x <- velocity.x -. 5.0;
+          velocity.x <- velocity.x -. controllable.speed;
         
-        movable.velocity <- velocity;
+        movable.velocity <- velocity
     | _ -> ()
   ) world.state.controllable_store
 
