@@ -1,0 +1,6 @@
+anim:characters_ink_master_walk_cycle:0:0:720:720:16:12
+tile:characters_extra_extra_character_a:0:720:64:64
+tile:characters_extra_extra_character_c:64:720:64:64
+tile:characters_extra_extra_character_d:128:720:64:64
+tile:characters_extra_extra_character_b:192:720:64:64
+tile:characters_extra_extra_character_e:256:720:64:64

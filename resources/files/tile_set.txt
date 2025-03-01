@@ -1,5 +1,0 @@
-extra_character_a.png
-extra_character_b.png
-extra_character_c.png
-extra_character_d.png
-extra_character_e.png
