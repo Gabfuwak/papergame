@@ -27,7 +27,7 @@ let update world elapsed =
     None
 
 let run keys =
-  let window = Gfx.create "game_canvas:800x600:" in
+  let window = Gfx.create "game_canvas:1200x720:" in
   let world = World.create window keys in
 
   (* This is basically just doing Gfx.load_file and Gfx.load_image and putting it in a tuple *)

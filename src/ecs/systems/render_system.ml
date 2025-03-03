@@ -43,7 +43,8 @@ let render_entity world entity position drawable =
 
 let update world =
   Gfx.set_color world.ctx (Gfx.color 255 255 255 255);
-  Gfx.fill_rect world.ctx world.window_surface 0 0 800 600;
+  let x,y = Gfx.get_context_logical_size world.ctx in
+  Gfx.fill_rect world.ctx world.window_surface 0 0 x y;
   
   Hashtbl.iter (fun entity drawable ->
     match Hashtbl.find_opt world.state.position_store entity with
