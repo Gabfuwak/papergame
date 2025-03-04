@@ -39,14 +39,21 @@ type t = {
   state : State.t;
 }
 
-let create window keys = 
-  let context = Gfx.get_context window in
-  let surface = Gfx.get_surface window in
-  let k_names = Hashtbl.create 4 in
+let setup_keys k_names keys = 
   Hashtbl.add k_names "left" keys.(0);
   Hashtbl.add k_names "right" keys.(1);
   Hashtbl.add k_names "up" keys.(2);
   Hashtbl.add k_names "down" keys.(3);
+  Hashtbl.add k_names "s" "s";
+  Hashtbl.add k_names "z" "z"
+
+let create window keys = 
+  let context = Gfx.get_context window in
+  let surface = Gfx.get_surface window in
+  let k_names = Hashtbl.create 32 in
+  setup_keys k_names keys;
+  
+ 
   
   {
     window;
@@ -76,7 +83,3 @@ let rec handle_events world =
       handle_events world
   | _ -> handle_events world
 
-
-
-
-  

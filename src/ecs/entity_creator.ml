@@ -11,7 +11,12 @@ let create_player world x y tex =
   let id = Entity.create () in
   let position = { pos = Vector.create x y } in
   let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
-  let controllable = { speed = 1.0 } in
+  let controls = Hashtbl.create 10 in
+  Hashtbl.add controls "up" Up;
+  Hashtbl.add controls "down" Down;
+  Hashtbl.add controls "left" Left;
+  Hashtbl.add controls "right" Right;
+  let controllable = { speed = 1.0; controls = controls} in
   
   Hashtbl.add world.state.position_store id position;
   Hashtbl.add world.state.movable_store id movable;
