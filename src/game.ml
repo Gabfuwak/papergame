@@ -4,7 +4,9 @@ open Resources
 open Entity_creator
 
 let setup world = 
-  let _ = create_player world 100.0 100.0 "characters_ink_master_walk_cycle" in
+  ignore @@ create_ball world;
+  ignore @@ create_paddle world true;
+  ignore @@ create_paddle world false;
   ()
 
 
@@ -27,7 +29,7 @@ let update world elapsed =
     None
 
 let run keys =
-  let window = Gfx.create "game_canvas:1200x720:" in
+  let window = Gfx.create "game_canvas:800x600:" in
   let world = World.create window keys in
 
   (* This is basically just doing Gfx.load_file and Gfx.load_image and putting it in a tuple *)
