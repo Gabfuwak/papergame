@@ -4,6 +4,7 @@ open Entity
 open Position
 open Movable
 open Controllable
+open Collider
 open Drawable
 open Vector
 
@@ -71,6 +72,19 @@ let create_paddle world is_right =
     
   let controllable = { speed = paddle_speed; controls = controls } in
 
+    let hitbox = {
+    boxtype = "";
+    pos = Vector.create 0.0 0.0;
+    width = float_of_int paddle_width;
+    height = float_of_int paddle_height;
+  } in
+  
+  let collider = {
+    origin_pos = position.pos;
+    boxes = [| hitbox |];
+    weight = Float.infinity;
+  } in
+
   let black = Gfx.color 0 0 0 255 in
   
   let texture = Color black in
@@ -81,6 +95,7 @@ let create_paddle world is_right =
   Hashtbl.add world.state.position_store id position;
   Hashtbl.add world.state.movable_store id movable;
   Hashtbl.add world.state.controllable_store id controllable;
+  Hashtbl.add world.state.collider_store id collider;
   
   id
 
@@ -95,7 +110,20 @@ let create_ball world =
 
   let position = { pos = Vector.create pos_x pos_y} in
 
-  let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
+  let movable = { velocity = Vector.create 2.5 2.5; force = Vector.create 0.0 0.0 } in
+
+  let hitbox = {
+    boxtype = "";
+    pos = Vector.create 0.0 0.0;
+    width = float_of_int ball_size;
+    height = float_of_int ball_size;
+  } in
+  
+  let collider = {
+    origin_pos = position.pos;
+    boxes = [| hitbox |];
+    weight = 1.0; 
+  } in
   
   let black = Gfx.color 0 0 0 255 in
   
@@ -106,6 +134,39 @@ let create_ball world =
   Hashtbl.add world.state.position_store id position;
   Hashtbl.add world.state.movable_store id movable;
   Hashtbl.add world.state.drawable_store id drawable;
+  Hashtbl.add world.state.collider_store id collider;
+
+  id
 
 
+let create_wall world x y width height =
+  let id = Entity.create() in
+  
+  let position = { pos = Vector.create x y } in
+  let hitbox = {
+    boxtype = "";
+    pos = Vector.create 0.0 0.0;
+    width = width;
+    height = height;
+  } in
+  
+  let collider = {
+    origin_pos = position.pos;
+    boxes = [| hitbox |];
+    weight = Float.infinity;
+  } in
 
+  let black = Gfx.color 0 0 0 255 in
+  let texture = Color black in
+  let drawable = {
+    screen_pos = Vector.create x y;
+    width = int_of_float width;
+    height = int_of_float height;
+    texture = texture
+  } in
+  
+  Hashtbl.add world.state.position_store id position;
+  Hashtbl.add world.state.collider_store id collider;
+  Hashtbl.add world.state.drawable_store id drawable;
+  
+  id

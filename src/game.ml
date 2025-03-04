@@ -4,6 +4,20 @@ open Resources
 open Entity_creator
 
 let setup world = 
+  let width, height = Gfx.get_context_logical_size world.ctx in
+  let width_f = float_of_int width in
+  let height_f = float_of_int height in
+  let wall_thickness = 10.0 in
+  
+  (* Top *)
+  ignore @@ create_wall world 0.0 0.0 width_f wall_thickness;
+  (* Bottom *)
+  ignore @@ create_wall world 0.0 (height_f -. wall_thickness) width_f wall_thickness;
+  (* Left *)
+  ignore @@ create_wall world 0.0 0.0 10.0 height_f;
+  (* Right *)
+  ignore @@ create_wall world (width_f -. wall_thickness) 0.0 10.0 height_f;
+
   ignore @@ create_ball world;
   ignore @@ create_paddle world true;
   ignore @@ create_paddle world false;
@@ -20,6 +34,7 @@ let update world elapsed =
   
   (* systems *)
   Control_system.update world;
+  Collision_system.update world;
   Movement_system.update world;
   Render_system.update world;
   

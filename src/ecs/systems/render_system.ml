@@ -8,6 +8,7 @@ open Types
 open Drawable
 open World
 open Position
+module C = Collider
 
 let update_animation animation dt =
   match animation with
@@ -41,6 +42,20 @@ let render_entity world entity position drawable =
         (int_of_float position.pos.x) (int_of_float position.pos.y)
         drawable.width drawable.height
 
+
+(* DEBUG *)
+let render_hitbox world position collider =
+  let hitbox_color = Gfx.color 255 0 0 128 in  (* Semi-transparent red *)
+  Gfx.set_color world.ctx hitbox_color;
+  
+  Array.iter (fun box ->
+    let box_x = position.pos.x +. box.C.pos.x in
+    let box_y = position.pos.y +. box.C.pos.y in
+    Gfx.fill_rect world.ctx world.window_surface
+      (int_of_float box_x) (int_of_float box_y)
+      (int_of_float box.C.width) (int_of_float box.C.height)
+  ) collider.C.boxes
+
 let update world =
   Gfx.set_color world.ctx (Gfx.color 255 255 255 255);
   let x,y = Gfx.get_context_logical_size world.ctx in
@@ -54,5 +69,21 @@ let update world =
         world.should_stop <- true;
         world.exit_message <- "Error: tried to draw entity " ^ string_of_int entity ^ " but it does not gave a position.\n";
   ) world.state.drawable_store;
+
+  if world.debug_hitboxes then
+    Hashtbl.iter (fun entity collider ->
+      match Hashtbl.find_opt world.state.position_store entity with
+      | Some position -> render_hitbox world position collider
+      | None -> ()
+    ) world.state.collider_store;
   
   Gfx.commit world.ctx
+
+
+
+
+
+
+
+
+

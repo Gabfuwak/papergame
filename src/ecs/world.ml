@@ -8,6 +8,7 @@ module State = struct
     movable_store : (Entity.t, Movable.t) Hashtbl.t;
     drawable_store : (Entity.t, Drawable.t) Hashtbl.t;
     controllable_store : (Entity.t, Controllable.t) Hashtbl.t;
+    collider_store : (Entity.t, Collider.t) Hashtbl.t;
   }
   
   let create () = {
@@ -15,6 +16,7 @@ module State = struct
     movable_store = Hashtbl.create 64;
     controllable_store = Hashtbl.create 64;
     drawable_store = Hashtbl.create 64;
+    collider_store = Hashtbl.create 64;
   }
 end
 
@@ -37,6 +39,9 @@ type t = {
   (* game data *)
   resources : Resources.t;
   state : State.t;
+
+  (* Debug *)
+  debug_hitboxes : bool;
 }
 
 let setup_keys k_names keys = 
@@ -69,6 +74,8 @@ let create window keys =
     
     resources = Resources.create ();
     state = State.create ();
+
+    debug_hitboxes = true;
   }
 
 
