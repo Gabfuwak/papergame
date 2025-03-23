@@ -23,6 +23,8 @@ let check_collision box1_pos box1_width box1_height box2_pos box2_width box2_hei
   overlap_x && overlap_y
 
 let solve_collision position movable collider1 collider2 =
+  let safety_margin = 0.5 in
+
   if collider2.weight = Float.infinity then
     let box1 = collider1.boxes.(0) in
     let box2 = collider2.boxes.(0) in
@@ -41,14 +43,14 @@ let solve_collision position movable collider1 collider2 =
     if penetration_x < penetration_y then (
       movable.velocity.x <- -.movable.velocity.x;
 
-      let correction = if dx > 0.0 then penetration_x else -.penetration_x in
+      let correction = if dx > 0.0 then penetration_x +. safety_margin else -.(penetration_x +. safety_margin) in
       position.P.pos.x <- position.P.pos.x +. correction;
       collider1.origin_pos.x <- position.P.pos.x;
     )
     else (
       movable.velocity.y <- -.movable.velocity.y;
 
-      let correction = if dy > 0.0 then penetration_y else -.penetration_y in
+      let correction = if dy > 0.0 then penetration_y +. safety_margin else -.(penetration_y +. safety_margin) in
       position.P.pos.y <- position.P.pos.y +. correction;
       collider1.origin_pos.y <- position.P.pos.y;
     );

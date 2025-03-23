@@ -36,9 +36,23 @@ let update world elapsed =
   
   (* systems *)
   Control_system.update world;
-  Physics_system.update world;
-  Collision_system.update world;
-  Movement_system.update world;
+
+  let subdivisions = 10 in
+  let sub_dt = world.dt /. float_of_int subdivisions in
+  
+  for _ = 1 to subdivisions do
+    let original_dt = world.dt in
+  
+    world.dt <- sub_dt;
+  
+    Physics_system.update world;
+    Movement_system.update world;
+    Collision_system.update world;
+  
+    world.dt <- original_dt;
+  done;
+
+
   Camera_system.update world;
   Render_system.update world;
   
