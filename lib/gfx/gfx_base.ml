@@ -1,5 +1,6 @@
 (* Exception raised when a graphical error occurs *)
 exception GfxError of string
+exception GfxExit
 
 let gfx_error fmt = Format.kasprintf (fun msg -> raise (GfxError msg)) fmt
 
@@ -10,6 +11,7 @@ type event =
   | KeyDown of string (* Key with a given name was pressed *)
   | MouseMove of int * int (*x/y coordinates, relative to the window. *)
   | MouseButton of int * bool * int * int (* button button number, pressed/released, x/y relative to the window. *)
+  | Quit
 
 let parse_window_spec s =
   try

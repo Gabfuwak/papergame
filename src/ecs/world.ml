@@ -88,5 +88,8 @@ let rec handle_events world =
   | KeyUp key -> 
       Hashtbl.add world.keypresses key false;
       handle_events world
+  | Quit -> 
+      world.should_stop <- true;
+      world.exit_message <- "SDL quit event triggered. Exiting game.."
   | _ -> handle_events world
 
