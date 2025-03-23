@@ -41,24 +41,22 @@ let create_player world x y tex =
   id
 
 
-let create_camera world x y width height zoom =
+let create_camera world target x y width height zoom =
   let id = Entity.create () in
   let position = { pos = Vector.create x y } in
-  let camera = { zoom = zoom; width = width; height = height } in
+  let camera = { 
+    zoom = zoom; 
+    width = width; 
+    height = height;
+    target = target;
+    offset = Vector.create 0.0 0.0;
+  } in
   
   let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
-  
-  let controls = Hashtbl.create 10 in
-  Hashtbl.add controls "i" Up;
-  Hashtbl.add controls "k" Down;
-  Hashtbl.add controls "j" Left;
-  Hashtbl.add controls "l" Right;
-  let controllable = { speed = 5.0; controls = controls } in  (* Adjust speed as needed *)
   
   Hashtbl.add world.state.position_store id position;
   Hashtbl.add world.state.camera_store id camera;
   Hashtbl.add world.state.movable_store id movable;
-  Hashtbl.add world.state.controllable_store id controllable;
   
   if world.active_camera_id = None then
     world.active_camera_id <- Some id;

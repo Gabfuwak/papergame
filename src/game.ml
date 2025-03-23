@@ -18,11 +18,11 @@ let setup world =
   (* Right *)
   ignore @@ create_wall world (width_f -. wall_thickness) 0.0 10.0 height_f;
 
-  ignore @@ create_ball world;
+  let ball_id = create_ball world in
   ignore @@ create_paddle world true;
   ignore @@ create_paddle world false;
 
-  ignore @@ create_camera world (width_f /. 2.0) (height_f /. 2.0) width_f height_f 1.0;
+  ignore @@ create_camera world (Some ball_id) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 1.0;
   ()
 
 
@@ -38,6 +38,7 @@ let update world elapsed =
   Control_system.update world;
   Collision_system.update world;
   Movement_system.update world;
+  Camera_system.update world;
   Render_system.update world;
   
   if world.should_stop then
