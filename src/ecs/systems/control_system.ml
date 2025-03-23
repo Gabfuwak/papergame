@@ -18,29 +18,29 @@ let is_key_pressed world key =
   with Not_found ->
     false 
 
-let apply_control velocity movable controllable control = 
+
+let get_direction control =
   match control with
-  | Left -> velocity.x <- velocity.x -. controllable.speed
-  | Right -> velocity.x <- velocity.x +. controllable.speed
-  | Up -> velocity.y <- velocity.y -. controllable.speed
-  | Down -> velocity.y <- velocity.y +. controllable.speed
-  
+  | Left -> Vector.create (-1.0) 0.0
+  | Right -> Vector.create 1.0 0.0
+  | Up -> Vector.create 0.0 (-1.0)
+  | Down -> Vector.create 0.0 1.0
 
 let update world =
-  (* Find all controllable entities *)
   Hashtbl.iter (fun entity controllable ->
     match Hashtbl.find_opt world.state.movable_store entity,
           Hashtbl.find_opt world.state.position_store entity with
     | Some movable, Some position ->
-        (* Update velocity based on key presses *)
-        let velocity = Vector.create 0.0 0.0 in
+        let direction = Vector.create 0.0 0.0 in
         
-        Hashtbl.iter (fun key control -> 
-          if is_key_pressed world key then 
-            apply_control velocity movable controllable control
+        Hashtbl.iter (fun key control ->
+          if is_key_pressed world key then
+            let control_dir = get_direction control in
+            direction.x <- direction.x +. control_dir.x;
+            direction.y <- direction.y +. control_dir.y
         ) controllable.controls;
         
-        movable.velocity <- normalize velocity
+        let normalized_direction = normalize direction in
+        movable.velocity <- Vector.scale normalized_direction controllable.speed
     | _ -> ()
   ) world.state.controllable_store
-

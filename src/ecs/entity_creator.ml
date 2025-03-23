@@ -68,7 +68,7 @@ let create_camera world target x y width height zoom =
 let create_paddle world is_right =
   let paddle_height = 200 in
   let paddle_width = 20 in
-  let paddle_speed = 2.0 in
+  let paddle_speed = 10.0 in
 
   let id = Entity.create () in
   let width, height = Gfx.get_context_logical_size world.ctx in
