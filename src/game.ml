@@ -8,7 +8,7 @@ let setup world =
   let width_f = float_of_int width in
   let height_f = float_of_int height in
   let wall_thickness = 10.0 in
-  
+
   (* Top *)
   ignore @@ create_wall world 0.0 0.0 width_f wall_thickness;
   (* Bottom *)
@@ -21,6 +21,8 @@ let setup world =
   ignore @@ create_ball world;
   ignore @@ create_paddle world true;
   ignore @@ create_paddle world false;
+
+  ignore @@ create_camera world (width_f /. 2.0) (height_f /. 2.0) width_f height_f 1.0;
   ()
 
 

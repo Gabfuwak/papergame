@@ -9,6 +9,7 @@ module State = struct
     drawable_store : (Entity.t, Drawable.t) Hashtbl.t;
     controllable_store : (Entity.t, Controllable.t) Hashtbl.t;
     collider_store : (Entity.t, Collider.t) Hashtbl.t;
+    camera_store : (Entity.t, Camera.t) Hashtbl.t;
   }
   
   let create () = {
@@ -17,6 +18,7 @@ module State = struct
     controllable_store = Hashtbl.create 64;
     drawable_store = Hashtbl.create 64;
     collider_store = Hashtbl.create 64;
+    camera_store = Hashtbl.create 64;
   }
 end
 
@@ -40,6 +42,9 @@ type t = {
   resources : Resources.t;
   state : State.t;
 
+  (* camera *)
+  mutable active_camera_id : Entity.t option;
+
   (* Debug *)
   debug_hitboxes : bool;
 }
@@ -50,7 +55,11 @@ let setup_keys k_names keys =
   Hashtbl.add k_names "up" keys.(2);
   Hashtbl.add k_names "down" keys.(3);
   Hashtbl.add k_names "s" "s";
-  Hashtbl.add k_names "z" "z"
+  Hashtbl.add k_names "z" "z";
+  Hashtbl.add k_names "i" "i";
+  Hashtbl.add k_names "j" "j";
+  Hashtbl.add k_names "k" "k";
+  Hashtbl.add k_names "l" "l"
 
 let create window keys = 
   let context = Gfx.get_context window in
@@ -74,6 +83,8 @@ let create window keys =
     
     resources = Resources.create ();
     state = State.create ();
+
+    active_camera_id = None;
 
     debug_hitboxes = true;
   }
