@@ -68,7 +68,7 @@ let create_camera world target x y width height zoom =
 let create_paddle world is_right =
   let paddle_height = 200 in
   let paddle_width = 20 in
-  let paddle_speed = 10.0 in
+  let paddle_speed = 200.0 in
 
   let id = Entity.create () in
   let width, height = Gfx.get_context_logical_size world.ctx in
@@ -132,7 +132,7 @@ let create_ball world =
 
   let position = { pos = Vector.create pos_x pos_y} in
 
-  let movable = { velocity = Vector.create 2.5 2.5; force = Vector.create 0.0 0.0 } in
+  let movable = { velocity = Vector.create 200.0 0.0; force = Vector.create 0.0 0.0 } in
 
   let hitbox = {
     boxtype = "";

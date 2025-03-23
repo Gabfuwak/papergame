@@ -36,6 +36,7 @@ let update world elapsed =
   
   (* systems *)
   Control_system.update world;
+  Physics_system.update world;
   Collision_system.update world;
   Movement_system.update world;
   Camera_system.update world;

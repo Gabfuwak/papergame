@@ -3,7 +3,7 @@ open Position
 open Movable
 open Vector
 
-let gravity = Vector.create 0.0 9.8
+let gravity = Vector.create 0.0 980.0 (* I consider that 1 unit = 1cm *)
 
 let update world =
   let dt = world.dt *. 0.001 in
