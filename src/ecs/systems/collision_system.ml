@@ -22,7 +22,7 @@ let check_collision box1_pos box1_width box1_height box2_pos box2_width box2_hei
 
   overlap_x && overlap_y
 
-let solve_collision is_controllable position movable collider1 collider2 =
+let solve_collision is_controllable position movable collider1 collider2 collision_velocity=
   let safety_margin = 0.5 in
 
   if collider2.weight = Float.infinity then
@@ -42,9 +42,9 @@ let solve_collision is_controllable position movable collider1 collider2 =
 
     if penetration_x < penetration_y then (
       if is_controllable then
-        movable.velocity.x <- 0.0
+        movable.velocity.x <- collision_velocity.x 
       else
-        movable.velocity.x <- -.movable.velocity.x;
+        movable.velocity.x <- collision_velocity.x -. movable.velocity.x;
 
       let correction = if dx > 0.0 then penetration_x +. safety_margin else -.(penetration_x +. safety_margin) in
       position.P.pos.x <- position.P.pos.x +. correction;
@@ -52,9 +52,9 @@ let solve_collision is_controllable position movable collider1 collider2 =
     )
     else (
       if is_controllable then
-        movable.velocity.y <- 0.0
+        movable.velocity.y <- collision_velocity.y
       else
-        movable.velocity.y <- -.movable.velocity.y;
+        movable.velocity.y <- collision_velocity.y -.movable.velocity.y;
 
       let correction = if dy > 0.0 then penetration_y +. safety_margin else -.(penetration_y +. safety_margin) in
       position.P.pos.y <- position.P.pos.y +. correction;
@@ -77,7 +77,13 @@ let update world =
           if check_collision box1_pos box1.width box1.height box2_pos box2.width box2.height then (
             Gfx.debug "Collision detected between %d and %d!\n" entity1 entity2;
             let is_controllable = Hashtbl.mem world.state.controllable_store entity1 in
-            solve_collision is_controllable position movable collider1 collider2;
+            let movable_opt= Hashtbl.find_opt world.state.movable_store entity2 in
+            let collision_velocity = 
+              match movable_opt with 
+              | Some a -> a.velocity
+              | None -> Vector.zero
+            in
+            solve_collision is_controllable position movable collider1 collider2 collision_velocity;
           )
         )
       ) world.state.collider_store;
