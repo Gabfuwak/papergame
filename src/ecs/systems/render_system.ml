@@ -49,6 +49,12 @@ let update_animation animation dt =
 
 let render_entity world camera camera_pos entity position drawable =
   update_animation drawable.texture world.dt;
+
+  let facing_right = 
+    match Hashtbl.find_opt world.state.character_store entity with
+    | Some character -> character.facing_right
+    | None -> true (* Default facing right if no character component *)
+  in
   
   let screen_width, screen_height = Gfx.get_context_logical_size world.ctx in
   let screen_width_f = float_of_int screen_width in
@@ -58,24 +64,31 @@ let render_entity world camera camera_pos entity position drawable =
   
   let scaled_width = int_of_float (float_of_int drawable.width *. camera.Camera.zoom) in
   let scaled_height = int_of_float (float_of_int drawable.height *. camera.Camera.zoom) in
+
+  if not facing_right then
+    Gfx.set_transform world.ctx 0.0 true false (* Horizontal flip *)
+  else
+    Gfx.reset_transform world.ctx;
   
   match drawable.texture with
   | Color color ->
       Gfx.set_color world.ctx color;
       Gfx.fill_rect world.ctx world.window_surface
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
-        scaled_width scaled_height
+      scaled_width scaled_height;
         
   | Image surface ->
       Gfx.blit_scale world.ctx world.window_surface surface
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
-        scaled_width scaled_height
+      scaled_width scaled_height;
         
   | Animation anim ->
       let current_frame = anim.frames.(anim.current_frame) in
       Gfx.blit_scale world.ctx world.window_surface current_frame
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
-        scaled_width scaled_height
+      scaled_width scaled_height;
+
+  Gfx.reset_transform world.ctx
 
 
 (* DEBUG *)

@@ -18,9 +18,7 @@ let setup world =
   (* Right *)
   ignore @@ create_wall world (width_f -. wall_thickness) 0.0 10.0 height_f;
 
-  ignore @@ create_ball world;
-  ignore @@ create_paddle world true;
-  ignore @@ create_paddle world false;
+  let _ = create_player world 100.0 100.0 "characters/ink_master/idle" in
 
   ignore @@ create_camera world None (width_f /. 2.0) (height_f /. 2.0) width_f height_f 1.0;
   ()
@@ -35,7 +33,10 @@ let update world elapsed =
   world.last_frame_time <- elapsed;
   
   (* systems *)
-  Control_system.update world;
+  (* Control_system.update world; *)
+
+  
+  State_machine.update world;
 
   let subdivisions = 10 in
   let sub_dt = world.dt /. float_of_int subdivisions in

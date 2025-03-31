@@ -6,5 +6,5 @@ type move =
 
 type t = {
   mutable speed : float;
-  mutable controls : (string, move) Hashtbl.t;
+  mutable controls : (move, string) Hashtbl.t;
 }

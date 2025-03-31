@@ -1,7 +1,7 @@
 open Types
 
 
-module State = struct
+module WorldState = struct
   type t = {
     (* Component stores *)
     position_store : (Entity.t, Position.t) Hashtbl.t;
@@ -10,6 +10,7 @@ module State = struct
     controllable_store : (Entity.t, Controllable.t) Hashtbl.t;
     collider_store : (Entity.t, Collider.t) Hashtbl.t;
     camera_store : (Entity.t, Camera.t) Hashtbl.t;
+    character_store : (Entity.t, State.Character.t) Hashtbl.t;
   }
   
   let create () = {
@@ -19,6 +20,7 @@ module State = struct
     drawable_store = Hashtbl.create 64;
     collider_store = Hashtbl.create 64;
     camera_store = Hashtbl.create 64;
+    character_store = Hashtbl.create 64;
   }
 end
 
@@ -40,7 +42,7 @@ type t = {
   
   (* game data *)
   resources : Resources.t;
-  state : State.t;
+  state : WorldState.t;
 
   (* camera *)
   mutable active_camera_id : Entity.t option;
@@ -82,7 +84,7 @@ let create window keys =
     exit_message = "Still running.. If this is the exit message something very bad happened.";
     
     resources = Resources.create ();
-    state = State.create ();
+    state = WorldState.create ();
 
     active_camera_id = None;
 

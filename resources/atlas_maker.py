@@ -66,7 +66,7 @@ def collect_assets(root_dir):
             for filename in png_files:
                 filepath = os.path.join(dirpath, filename)
                 rel_path = os.path.relpath(filepath, start=root_dir)
-                name = rel_path.replace(os.path.sep, '_').replace('.png', '')
+                name = rel_path.replace(os.path.sep, '/').replace('.png', '')
                 
                 static_images.append(StaticTexture(name, filepath))
     
@@ -80,7 +80,7 @@ def collect_assets(root_dir):
         frame_paths = [os.path.join(dirpath, f) for f in png_files]
         
         rel_path = os.path.relpath(dirpath, start=root_dir)
-        name = rel_path.replace(os.path.sep, '_')
+        name = rel_path.replace(os.path.sep, '/')
         
         animations.append(AnimationSequence(name, frame_paths))
     
