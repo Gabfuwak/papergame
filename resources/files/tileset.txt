@@ -1,6 +1,11 @@
-anim:characters_ink_master_walk_cycle:0:0:360:360:16:12
-tile:characters_extra_extra_character_a:0:360:64:64
-tile:characters_extra_extra_character_c:64:360:64:64
-tile:characters_extra_extra_character_d:128:360:64:64
-tile:characters_extra_extra_character_b:192:360:64:64
-tile:characters_extra_extra_character_e:256:360:64:64
+anim:characters/ink_master/walk:0:0:360:360:16:12
+anim:characters/ink_master/attack_up:0:360:800:500:15:12
+anim:characters/ink_master/jump:0:860:400:500:18:12
+anim:characters/ink_master/idle:0:1360:400:500:3:3
+anim:characters/ink_master/run:0:1860:400:400:8:12
+anim:characters/ink_master/attack_forward:0:2260:800:500:10:12
+tile:characters/extra/extra_character_a:0:2760:64:64
+tile:characters/extra/extra_character_c:64:2760:64:64
+tile:characters/extra/extra_character_d:128:2760:64:64
+tile:characters/extra/extra_character_b:192:2760:64:64
+tile:characters/extra/extra_character_e:256:2760:64:64
