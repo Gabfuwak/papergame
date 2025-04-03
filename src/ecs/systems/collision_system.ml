@@ -75,7 +75,6 @@ let update world =
           let box2_pos = Vector.add collider2.origin_pos box2.pos in
 
           if check_collision box1_pos box1.width box1.height box2_pos box2.width box2.height then (
-            Gfx.debug "Collision detected between %d and %d!\n" entity1 entity2;
             let is_controllable = Hashtbl.mem world.state.controllable_store entity1 in
             let movable_opt= Hashtbl.find_opt world.state.movable_store entity2 in
             let collision_velocity = 
