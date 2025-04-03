@@ -22,7 +22,7 @@ let check_collision box1_pos box1_width box1_height box2_pos box2_width box2_hei
 
   overlap_x && overlap_y
 
-let solve_collision is_controllable position movable collider1 collider2 collision_velocity=
+let solve_collision world entity1 is_controllable position movable collider1 collider2 collision_velocity =
   let safety_margin = 0.5 in
 
   if collider2.weight = Float.infinity then
@@ -59,6 +59,14 @@ let solve_collision is_controllable position movable collider1 collider2 collisi
       let correction = if dy > 0.0 then penetration_y +. safety_margin else -.(penetration_y +. safety_margin) in
       position.P.pos.y <- position.P.pos.y +. correction;
       collider1.origin_pos.y <- position.P.pos.y;
+
+      if dy < 0.0 then ( (* We're colliding from above *)
+        (match Hashtbl.find_opt world.state.character_store entity1 with
+        | Some character -> 
+            if not character.is_grounded then Gfx.debug "Character grounded.\n" else ();
+            character.is_grounded <- true;
+        | None -> ())
+      )
     );
   ()
 
@@ -82,7 +90,7 @@ let update world =
               | Some a -> a.velocity
               | None -> Vector.zero
             in
-            solve_collision is_controllable position movable collider1 collider2 collision_velocity;
+            solve_collision world entity1 is_controllable position movable collider1 collider2 collision_velocity;
           )
         )
       ) world.state.collider_store;

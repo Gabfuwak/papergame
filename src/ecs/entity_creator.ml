@@ -19,7 +19,8 @@ let create_player world x y tex =
   Hashtbl.add controls Down "down";
   Hashtbl.add controls Left "left";
   Hashtbl.add controls Right "right";
-  let controllable = { speed = 200.0; controls = controls} in
+  Hashtbl.add controls Jump "space";
+  let controllable = {controls = controls} in
   
   Hashtbl.add world.state.position_store id position;
   Hashtbl.add world.state.movable_store id movable;
@@ -39,12 +40,19 @@ let create_player world x y tex =
 
   Hashtbl.add world.state.drawable_store id drawable;
 
+  let stats = {
+    Character.air_control = 200.0;
+    Character.running_speed = 200.0;
+    Character.jump_force = 400.0;
+  } in
+
   let character = {
+    Character.stats = stats;
     Character.current_state = State.Character.Idle;
-    State.Character.previous_state = State.Character.Idle;
-    State.Character.time_in_state = 0.0;
-    State.Character.facing_right = true;
-    State.Character.can_cancel = true;
+    Character.previous_state = State.Character.Idle;
+    Character.time_in_state = 0.0;
+    Character.facing_right = true;
+    Character.is_grounded = false;
   } in
 
   Hashtbl.add world.state.character_store id character;

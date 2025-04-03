@@ -3,8 +3,8 @@ type move =
       | Down
       | Left
       | Right
+      | Jump
 
 type t = {
-  mutable speed : float;
   mutable controls : (move, string) Hashtbl.t;
 }

@@ -56,6 +56,7 @@ let setup_keys k_names keys =
   Hashtbl.add k_names "right" keys.(1);
   Hashtbl.add k_names "up" keys.(2);
   Hashtbl.add k_names "down" keys.(3);
+  Hashtbl.add k_names "space" " ";
   Hashtbl.add k_names "s" "s";
   Hashtbl.add k_names "z" "z";
   Hashtbl.add k_names "i" "i";
