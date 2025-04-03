@@ -19,7 +19,7 @@ let create_player world x y tex =
   Hashtbl.add controls Down "down";
   Hashtbl.add controls Left "left";
   Hashtbl.add controls Right "right";
-  let controllable = { speed = 20.0; controls = controls} in
+  let controllable = { speed = 200.0; controls = controls} in
   
   Hashtbl.add world.state.position_store id position;
   Hashtbl.add world.state.movable_store id movable;

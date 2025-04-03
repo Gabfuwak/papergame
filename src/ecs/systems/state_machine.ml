@@ -29,69 +29,56 @@ let switch_texture world state drawable =
     in
   drawable.texture <- texture
 
-let is_move_made world move controllable =
-  match Hashtbl.find_opt controllable.controls move with
+let is_action_made world action controllable =
+  match Hashtbl.find_opt controllable.controls action with
   | Some key -> is_key_pressed world key 
   | None -> false
 
-
-let can_transition from_state to_state =
-  match from_state, to_state with
-  | Character.Idle, Character.Running -> true
-  | Character.Running, Character.Idle -> true
-  | Character.Running, Character.Running -> true
-  | _ -> false
-
 let transition_state world previous_state new_state character drawable =
-  character.previous_state <- character.current_state;
+  character.previous_state <- previous_state; (* not current state in case we do multiple things at the same time *)
   character.current_state <- new_state;
   if previous_state <> new_state then 
     switch_texture world new_state drawable
 
+let process_run_transition world prev_state character controllable movable drawable =
+  let state_changed = 
+    if is_action_made world Left controllable then (
+      movable.velocity.x <- movable.velocity.x -. controllable.speed *. world.dt *. 0.001;
+      character.facing_right <- false;
+      transition_state world prev_state Running character drawable;
+      true
+    ) else false
+  in
+  
+  let state_changed = 
+    if is_action_made world Right controllable then (
+      movable.velocity.x <- movable.velocity.x +. controllable.speed *. world.dt *. 0.001;
+      character.facing_right <- true;
+      transition_state world prev_state Running character drawable;
+      true
+    ) else state_changed
+  in
+  
+  state_changed
 
+let process_idle_transition world prev_state character controllable movable drawable =
+      movable.velocity.x <- 0.0;
+      transition_state world prev_state Idle character drawable
 
 let update_character character controllable movable drawable dt world =
   character.time_in_state <- character.time_in_state +. dt;
   
+  (*the transition processing functions *)
   match character.current_state with
   | Idle -> 
-      if is_move_made world Left controllable then (
-          movable.velocity.x <- movable.velocity.x -. controllable.speed ;
-          character.facing_right <- false;
-          transition_state world Idle Running character drawable
-      );
-      if  is_move_made world Right controllable
-        then (
-          movable.velocity.x <- movable.velocity.x +. controllable.speed ;
-          character.facing_right <- true;
-          transition_state world Idle Running character drawable
-      );
-      
-    if not (is_move_made world Left controllable || is_move_made world Right controllable) then
-      (
-      movable.velocity.x <- 0.0;
-      transition_state world Idle Idle character drawable
-      )
+    let active = process_run_transition world Idle character controllable movable drawable in
+    if not active then
+        process_idle_transition world Idle character controllable movable drawable
 
   | Running -> 
-      if is_move_made world Left controllable then (
-          movable.velocity.x <- movable.velocity.x -. controllable.speed ;
-          character.facing_right <- false;
-          transition_state world Running Running character drawable
-      );
-      if  is_move_made world Right controllable
-        then (
-          movable.velocity.x <- movable.velocity.x +. controllable.speed ;
-          character.facing_right <- true;
-          transition_state world Running Running character drawable
-      );
-      
-    if not (is_move_made world Left controllable || is_move_made world Right controllable) then
-      (
-      movable.velocity.x <- 0.0;
-      transition_state world Running Idle character drawable
-      )
-
+    let active = process_run_transition world Running character controllable movable drawable in
+    if not active then
+        process_idle_transition world Running character controllable movable drawable
   | _ -> ()
 
 let update world =
