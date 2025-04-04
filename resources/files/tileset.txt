@@ -1,8 +1,8 @@
 anim:characters/ink_master/walk:0:0:360:360:16:12
 anim:characters/ink_master/attack_up:0:360:800:500:15:12
-anim:characters/ink_master/jump/top:0:860:400:500:2:12
-anim:characters/ink_master/jump/recall:0:1360:400:500:3:12
-anim:characters/ink_master/jump/prep:0:1860:400:500:4:12
+anim:characters/ink_master/jump/recall:0:860:400:500:7:12
+anim:characters/ink_master/jump/prep:0:1360:400:500:4:12
+anim:characters/ink_master/jump/top:0:1860:400:500:2:2
 anim:characters/ink_master/idle:0:2360:400:500:3:12
 anim:characters/ink_master/run:0:2860:400:400:8:12
 anim:characters/ink_master/attack_forward:0:3260:800:500:10:12

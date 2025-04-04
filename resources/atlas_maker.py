@@ -11,6 +11,14 @@ ATLAS_FILE = "images/tileset.png"
 METADATA_FILE = "files/tileset.txt"
 DEFAULT_FRAMERATE = 12
 
+def extract_framerate_from_name(name):
+    match = re.search(r'(.*?)(\d+)$', name)
+    if match:
+        clean_name = match.group(1)
+        framerate = int(match.group(2))
+        return clean_name, framerate
+    return name, None
+
 class AtlasItem:
     def __init__(self, name):
         self.name = name
@@ -80,9 +88,12 @@ def collect_assets(root_dir):
         frame_paths = [os.path.join(dirpath, f) for f in png_files]
         
         rel_path = os.path.relpath(dirpath, start=root_dir)
-        name = rel_path.replace(os.path.sep, '/')
+        raw_name = rel_path.replace(os.path.sep, '/')
+
+        clean_name, custom_framerate = extract_framerate_from_name(raw_name)
+        framerate = custom_framerate if custom_framerate is not None else DEFAULT_FRAMERATE
         
-        animations.append(AnimationSequence(name, frame_paths))
+        animations.append(AnimationSequence(clean_name, frame_paths, framerate=framerate))
     
     return static_images, animations
 
