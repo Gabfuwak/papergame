@@ -1,4 +1,5 @@
 open Types
+open State.Character
 open World  
 open Resources
 open Entity_creator
@@ -9,6 +10,7 @@ let setup world =
   let height_f = float_of_int height in
   let wall_thickness = 10.0 in
 
+
   (* Top *)
   ignore @@ create_wall world 0.0 0.0 width_f wall_thickness;
   (* Bottom *)
@@ -18,7 +20,7 @@ let setup world =
   (* Right *)
   ignore @@ create_wall world (width_f -. wall_thickness) 0.0 10.0 height_f;
 
-  let _ = create_player world 100.0 100.0 "characters/ink_master/idle" in
+  ignore @@ create_player world 100.0 100.0 "characters/ink_master/idle";
 
   ignore @@ create_camera world None (width_f /. 2.0) (height_f /. 2.0) width_f height_f 1.0;
   ()
@@ -37,6 +39,11 @@ let update world elapsed =
 
   
   State_machine.update world;
+
+  (* this is a dirty fix and i don't like it but whatever *)
+  Hashtbl.iter (fun id character ->
+    character.is_grounded <- false
+  ) world.state.character_store;
 
   let subdivisions = 10 in
   let sub_dt = world.dt /. float_of_int subdivisions in

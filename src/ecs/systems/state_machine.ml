@@ -107,8 +107,6 @@ let process_jump_prep_transition world prev_state character controllable movable
 
 (* Initial jump - apply upward force once when transitioning from prep *)
 let process_jumping_transition world character controllable movable drawable =
-  Gfx.debug "Triggered jump start\n";
-  character.is_grounded <- false;
   movable.velocity.y <- movable.velocity.y -. character.stats.jump_force;
   transition_state world JumpPrep Jumping character drawable;
   true
@@ -127,7 +125,6 @@ let process_jumping_continue world character controllable movable drawable =
 
 let process_jump_top_transition world character controllable movable drawable =
   if movable.velocity.y > -.5.0 && character.current_state == Jumping then (
-    Gfx.debug "Triggered jump top transition\n";
     transition_state world Jumping JumpTop character drawable;
     true
   ) else
@@ -136,7 +133,6 @@ let process_jump_top_transition world character controllable movable drawable =
 let process_falling_transition world prev_state character controllable movable drawable =
   (* Check if we're starting to fall *)
   if movable.velocity.y > 0.05 then (
-    Gfx.debug "Triggered jump to fall transition\n";
     transition_state world prev_state Falling character drawable;
     true
   ) else
@@ -148,16 +144,7 @@ let process_continue_falling_transition world character controllable movable dra
     false
 
 let process_jump_recall_transition world prev_state character controllable movable drawable =
-  (* If y velocity is very low after falling state, we landed *)
-    Gfx.debug "Checking for landing, is_grounded=%b, state=%s\n" 
-    character.is_grounded 
-    (match character.current_state with 
-     | Idle -> "Idle" | Running -> "Running" | JumpPrep -> "JumpPrep"
-     | Jumping -> "Jumping" | JumpTop -> "JumpTop" | Falling -> "Falling" 
-     | JumpRecall -> "JumpRecall" | _ -> "Other");
-
   if character.is_grounded then (
-    Gfx.debug "Triggered jump recall transition\n";
     transition_state world prev_state JumpRecall character drawable;
     true
   ) else

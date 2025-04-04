@@ -3,6 +3,7 @@ module P = Position
 open Movable
 open Collider
 open Vector
+open State.Character
 
 let check_collision box1_pos box1_width box1_height box2_pos box2_width box2_height =
   let x1 = box1_pos.x in
@@ -63,7 +64,7 @@ let solve_collision world entity1 is_controllable position movable collider1 col
       if dy < 0.0 then ( (* We're colliding from above *)
         (match Hashtbl.find_opt world.state.character_store entity1 with
         | Some character -> 
-            if not character.is_grounded then Gfx.debug "Character grounded.\n" else ();
+            (*if not character.is_grounded then Gfx.debug "Character grounded.\n" else ();*)
             character.is_grounded <- true;
         | None -> ())
       )
