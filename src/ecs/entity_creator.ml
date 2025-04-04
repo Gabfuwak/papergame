@@ -43,7 +43,7 @@ let create_player world x y tex =
   let stats = {
     Character.air_control = 200.0;
     Character.running_speed = 200.0;
-    Character.jump_force = 400.0;
+    Character.jump_force = 800.0;
   } in
 
   let character = {

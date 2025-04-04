@@ -1,4 +1,5 @@
 open State
+open Types
 open Vector
 open Character
 open Movable
@@ -20,13 +21,25 @@ let is_key_pressed world key =
   with Not_found ->
     false
 
-let switch_texture world state drawable = 
+let switch_texture world state drawable =
   let anim_key = get_animation_key "ink_master" state in
   let texture =
     match Hashtbl.find_opt world.resources.textures anim_key with
-    | Some tex -> tex
-    | None -> Gfx.debug "Missing texture: %s" anim_key; Hashtbl.find world.resources.textures "missing" 
-    in
+    | Some tex -> 
+        (* Create a copy of the animation with reset state *)
+        (match tex with
+        | Animation anim ->
+            Animation {
+              frames = anim.frames;
+              framerate = anim.framerate;
+              current_frame = 0;
+              accumulated_time = 0.0;
+            }
+        | _ -> tex)
+    | None -> 
+        Gfx.debug "Missing texture: %s" anim_key; 
+        Hashtbl.find world.resources.textures "missing"
+  in
   drawable.texture <- texture
 
 let string_of_action action =
@@ -43,6 +56,13 @@ let is_action_made world action controllable =
       is_key_pressed world key
   | None -> 
       false
+
+let is_animation_complete drawable =
+  match drawable.texture with
+  | Animation anim -> 
+      anim.current_frame >= Array.length anim.frames - 1
+  | _ -> 
+      true
 
 let transition_state world previous_state new_state character drawable =
   character.previous_state <- previous_state; (* not current state in case we do multiple things at the same time *)
@@ -106,19 +126,18 @@ let process_jumping_continue world character controllable movable drawable =
   false
 
 let process_jump_top_transition world character controllable movable drawable =
-  (* When the velocity starts becoming positive again, we are going down*)
-  if movable.velocity.y > -.5.0 then (
+  if movable.velocity.y > -.5.0 && character.current_state == Jumping then (
     Gfx.debug "Triggered jump top transition\n";
     transition_state world Jumping JumpTop character drawable;
     true
   ) else
     false
 
-let process_falling_transition world character controllable movable drawable =
+let process_falling_transition world prev_state character controllable movable drawable =
   (* Check if we're starting to fall *)
   if movable.velocity.y > 0.05 then (
     Gfx.debug "Triggered jump to fall transition\n";
-    transition_state world JumpTop Falling character drawable;
+    transition_state world prev_state Falling character drawable;
     true
   ) else
     false
@@ -128,7 +147,7 @@ let process_continue_falling_transition world character controllable movable dra
     transition_state world Falling Falling character drawable;
     false
 
-let process_jump_recall_transition world character controllable movable drawable =
+let process_jump_recall_transition world prev_state character controllable movable drawable =
   (* If y velocity is very low after falling state, we landed *)
     Gfx.debug "Checking for landing, is_grounded=%b, state=%s\n" 
     character.is_grounded 
@@ -139,25 +158,21 @@ let process_jump_recall_transition world character controllable movable drawable
 
   if character.is_grounded then (
     Gfx.debug "Triggered jump recall transition\n";
-    transition_state world Falling JumpRecall character drawable;
+    transition_state world prev_state JumpRecall character drawable;
     true
   ) else
     false
 
 let process_ground_transition world character controllable movable drawable =
-  (* After landing animation completes, return to appropriate ground state *)
-  if character.time_in_state > 5.0 *. 1.0 /. 12.0 then (* recall for 5 frames at 12fps *)
-    (* Check which ground state to return to based on input *)
-    let is_moving = is_action_made world Left controllable || is_action_made world Right controllable in
-    if is_moving then (
-      transition_state world JumpRecall Running character drawable;
-      true
-    ) else (
-      transition_state world JumpRecall Idle character drawable;
-      true
-    )
-  else
-    false
+  (* Check which ground state to return to based on input *)
+  let is_moving = is_action_made world Left controllable || is_action_made world Right controllable in
+  if is_moving then (
+    transition_state world JumpRecall Running character drawable;
+    true
+  ) else (
+    transition_state world JumpRecall Idle character drawable;
+    true
+  )
 
 let update_character character controllable movable drawable dt world =
   character.time_in_state <- character.time_in_state +. dt;
@@ -177,8 +192,11 @@ let update_character character controllable movable drawable dt world =
       ignore @@ process_idle_transition world Running character controllable movable drawable
 
   | JumpPrep ->
-    if character.time_in_state > 3.0 *. 1.0 /. 12.0 then (*prep for 3 12fps frames*)
+    if is_animation_complete drawable then
       ignore @@ process_jumping_transition world character controllable movable drawable
+    else
+       ignore @@ process_jump_prep_transition world JumpPrep character controllable movable drawable;
+      
 
   | Jumping ->
     let state_changed = process_jump_top_transition world character controllable movable drawable in
@@ -186,17 +204,21 @@ let update_character character controllable movable drawable dt world =
       ignore @@ process_jumping_continue world character controllable movable drawable;
 
   | JumpTop ->
-    let state_changed = process_falling_transition world character controllable movable drawable in
+    let state_changed = process_jump_recall_transition world JumpTop character controllable movable drawable in
     if not state_changed then
-       ignore @@ process_jump_top_transition world character controllable movable drawable
+      if is_animation_complete drawable then
+        ignore @@ process_falling_transition world JumpTop character controllable movable drawable
+      else
+        ignore @@ process_jump_top_transition world character controllable movable drawable 
 
   | Falling ->
-    let state_changed = process_jump_recall_transition world character controllable movable drawable in
+    let state_changed = process_jump_recall_transition world Falling character controllable movable drawable in
     if not state_changed then
       ignore @@ process_continue_falling_transition world character controllable movable drawable
 
   | JumpRecall ->
-    ignore @@ process_ground_transition world character controllable movable drawable
+    if is_animation_complete drawable then
+      ignore @@ process_ground_transition world character controllable movable drawable
 
   | _ -> ()
   
