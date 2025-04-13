@@ -192,19 +192,23 @@ let process_jumping_transition world character controllable movable drawable =
   transition_state world JumpPrep Jumping character drawable;
   true
 
-(* Continue jumping state - check for transition to top, handle horizontal movement *)
-let process_jumping_continue world character controllable movable drawable =
+let handle_air_control world movable controllable character =
   if is_action_made world Left controllable then (
     movable.velocity.x <- -. character.stats.air_control;
     character.facing_right <- false;
   ) else if is_action_made world Right controllable then (
     movable.velocity.x <- character.stats.air_control;
     character.facing_right <- true;
-  );
+  )
+
+(* Continue jumping state - check for transition to top, handle horizontal movement *)
+let process_jumping_continue world character controllable movable drawable =
+  handle_air_control world movable controllable character;
   transition_state world Jumping Jumping character drawable;
   false
 
 let process_jump_top_transition world character controllable movable drawable =
+  handle_air_control world movable controllable character;
   if movable.velocity.y > -.5.0 && character.current_state == Jumping then (
     transition_state world Jumping JumpTop character drawable;
     true
@@ -213,6 +217,7 @@ let process_jump_top_transition world character controllable movable drawable =
 
 let process_falling_transition world prev_state character controllable movable drawable =
   (* Check if we're starting to fall *)
+  handle_air_control world movable controllable character;
   if movable.velocity.y > 0.05 then (
     transition_state world prev_state Falling character drawable;
     true
@@ -220,18 +225,23 @@ let process_falling_transition world prev_state character controllable movable d
     false
 
 let process_continue_falling_transition world character controllable movable drawable =
+  handle_air_control world movable controllable character;
   (* Check if we're starting to fall *)
     transition_state world Falling Falling character drawable;
     false
 
 let process_jump_recall_transition world prev_state character controllable movable drawable =
   if character.is_grounded then (
+    movable.velocity.x <- 0.0;
     transition_state world prev_state JumpRecall character drawable;
     true
   ) else
     false
 
-let process_ground_transition world character controllable movable drawable =
+let process_ground_transition world character controllable movable position drawable =
+  let x_correction = if character.facing_right then 44.0 else -44.0 in
+  position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 12.0);
+
   (* Check which ground state to return to based on input *)
   let is_moving = is_action_made world Left controllable || is_action_made world Right controllable in
   if is_moving then (
@@ -285,10 +295,14 @@ let update_character entity character controllable position movable drawable dt 
       ignore @@ process_continue_falling_transition world character controllable movable drawable
 
   | JumpRecall ->
-    if is_animation_complete drawable then(
-        ignore @@ process_ground_transition world character controllable movable drawable;
-        let x_correction = if character.facing_right then 44.0 else -44.0 in
-        position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 12.0)
+    let active = process_jump_prep_transition world JumpRecall character controllable movable drawable in
+    let active = if not active then process_run_transition world JumpRecall character controllable movable drawable else active in
+    if active then(
+      let x_correction = if character.facing_right then 44.0 else -44.0 in
+      position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 12.0);
+    );
+    if not active && is_animation_complete drawable then(
+        ignore @@ process_ground_transition world character controllable movable position drawable;
       )
 
   | _ -> ());
