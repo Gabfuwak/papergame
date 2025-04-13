@@ -4,6 +4,7 @@ open Vector
 open Character
 open Movable
 open Controllable
+open Collider
 open Drawable
 open World
 
@@ -41,6 +42,72 @@ let switch_texture world state drawable =
         Hashtbl.find world.resources.textures "missing"
   in
   drawable.texture <- texture
+
+let update_entity_hitboxes world entity character drawable =
+  let anim_key = get_animation_key "ink_master" character.current_state in
+
+  match Hashtbl.find_opt world.state.collider_store entity with
+  | Some collider ->
+      (* Get current animation frame *)
+      let current_frame = 
+        match drawable.texture with
+        | Animation anim -> anim.current_frame
+        | _ -> 0
+      in
+      (* Look up hitboxes for this animation and frame *)
+      (match Hashtbl.find_opt world.resources.texture_hitboxes anim_key with
+      | Some frame_hitboxes -> 
+            
+          (* Check if we're within bounds *)
+          if current_frame < Array.length frame_hitboxes then
+            let frame_boxes = frame_hitboxes.(current_frame) in
+              
+            if Array.length frame_boxes > 0 then (
+              (* Create a copy of the hitboxes to avoid modifying the source data *)
+              let boxes_copy = Array.map (fun hitbox -> 
+                { hitbox with pos = Vector.create (hitbox.pos.x) (hitbox.pos.y) }
+              ) frame_boxes in
+              
+              (* Flip hitboxes if character is facing left *)
+              if not character.facing_right then (
+                Array.iter (fun hitbox ->
+                  hitbox.pos.x <- float_of_int drawable.width -. hitbox.pos.x -. hitbox.width;
+                ) boxes_copy
+              );
+              
+              collider.boxes <- boxes_copy;
+            ) else (
+              (* Check if there's an off-by-one issue where frames are indexed from 1 *)
+              if (current_frame + 1) < Array.length frame_hitboxes then
+                let frame_boxes_alt = frame_hitboxes.(current_frame + 1) in
+                if Array.length frame_boxes_alt > 0 then (
+                    
+                  let boxes_copy = Array.map (fun hitbox -> 
+                    { hitbox with pos = Vector.create (hitbox.pos.x) (hitbox.pos.y) }
+                  ) frame_boxes_alt in
+                  
+                  if not character.facing_right then
+                    Array.iter (fun hitbox ->
+                      hitbox.pos.x <- float_of_int drawable.width -. hitbox.pos.x -. hitbox.width;
+                    ) boxes_copy;
+                  
+                  collider.boxes <- boxes_copy;
+                )
+            )
+              
+      | None -> 
+          (* Default full-size vulnerable hitbox *)
+          if Array.length collider.boxes = 0 then (
+            collider.boxes <- [|{
+              Collider.boxtype = "vulnerable";
+              Collider.pos = Vector.create 0.0 0.0;
+              Collider.width = float_of_int drawable.width;
+              Collider.height = float_of_int drawable.height;
+            }|];
+          )
+    )
+  | None -> 
+      Gfx.debug "XXX Entity %d has no collider XXX\n" entity
 
 let string_of_action action =
   match action with
@@ -161,11 +228,11 @@ let process_ground_transition world character controllable movable drawable =
     true
   )
 
-let update_character character controllable movable drawable dt world =
+let update_character entity character controllable movable drawable dt world =
   character.time_in_state <- character.time_in_state +. dt;
   
   (*the transition processing functions *)
-  match character.current_state with
+  (match character.current_state with
   | Idle ->
     let active = process_jump_prep_transition world Idle character controllable movable drawable in
     let active = if not active then process_run_transition world Idle character controllable movable drawable else active in
@@ -207,7 +274,9 @@ let update_character character controllable movable drawable dt world =
     if is_animation_complete drawable then
       ignore @@ process_ground_transition world character controllable movable drawable
 
-  | _ -> ()
+  | _ -> ());
+
+   update_entity_hitboxes world entity character drawable
   
 
 let update world =
@@ -219,8 +288,9 @@ let update world =
           Hashtbl.find_opt world.state.drawable_store entity
     with
     | Some controllable, Some movable, Some position, Some drawable->
-        update_character character_state controllable movable drawable world.dt world;
+        update_character entity character_state controllable movable drawable world.dt world;
     | _ -> ()
 
-  ) world.state.character_store
+  ) world.state.character_store;
+
 

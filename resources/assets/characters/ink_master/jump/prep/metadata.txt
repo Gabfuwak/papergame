@@ -1,0 +1,4 @@
+hitbox:[name]:1:vulnerable:137:214:231:274
+hitbox:[name]:2:vulnerable:137:214:231:274
+hitbox:[name]:3:vulnerable:137:214:231:274
+hitbox:[name]:4:vulnerable:156:124:171:365

@@ -1,0 +1,13 @@
+hitbox:[name]:1:vulnerable:229:113:275:322
+hitbox:[name]:2:vulnerable:229:113:275:322
+hitbox:[name]:3:vulnerable:229:113:275:322
+hitbox:[name]:4:vulnerable:229:113:275:322
+hitbox:[name]:4:attack:255:125:432:209
+hitbox:[name]:5:vulnerable:229:113:275:322
+hitbox:[name]:5:vulnerable:229:113:275:322
+hitbox:[name]:5:attack:255:125:432:209
+hitbox:[name]:6:vulnerable:229:113:275:322
+hitbox:[name]:7:vulnerable:229:113:275:322
+hitbox:[name]:8:vulnerable:229:113:275:322
+hitbox:[name]:9:vulnerable:229:113:275:322
+hitbox:[name]:10:vulnerable:229:113:275:322
