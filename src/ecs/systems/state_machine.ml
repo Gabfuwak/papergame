@@ -44,6 +44,14 @@ let switch_texture world state drawable =
   drawable.texture <- texture
 
 let update_entity_hitboxes world entity character drawable =
+
+  let (drawable_width, drawable_height) =
+    match drawable.texture with
+    | Image i -> Gfx.surface_size i
+    | Animation a -> Gfx.surface_size a.frames.(0)
+    | _ -> (0,0)
+  in
+
   let anim_key = get_animation_key "ink_master" character.current_state in
 
   match Hashtbl.find_opt world.state.collider_store entity with
@@ -71,7 +79,7 @@ let update_entity_hitboxes world entity character drawable =
               (* Flip hitboxes if character is facing left *)
               if not character.facing_right then (
                 Array.iter (fun hitbox ->
-                  hitbox.pos.x <- float_of_int drawable.width -. hitbox.pos.x -. hitbox.width;
+                  hitbox.pos.x <- float_of_int drawable_width -. hitbox.pos.x -. hitbox.width;
                 ) boxes_copy
               );
               
@@ -88,7 +96,7 @@ let update_entity_hitboxes world entity character drawable =
                   
                   if not character.facing_right then
                     Array.iter (fun hitbox ->
-                      hitbox.pos.x <- float_of_int drawable.width -. hitbox.pos.x -. hitbox.width;
+                      hitbox.pos.x <- float_of_int drawable_width -. hitbox.pos.x -. hitbox.width;
                     ) boxes_copy;
                   
                   collider.boxes <- boxes_copy;
@@ -97,12 +105,13 @@ let update_entity_hitboxes world entity character drawable =
               
       | None -> 
           (* Default full-size vulnerable hitbox *)
+          
           if Array.length collider.boxes = 0 then (
             collider.boxes <- [|{
               Collider.boxtype = "vulnerable";
               Collider.pos = Vector.create 0.0 0.0;
-              Collider.width = float_of_int drawable.width;
-              Collider.height = float_of_int drawable.height;
+              Collider.width = float_of_int drawable_width;
+              Collider.height = float_of_int drawable_height;
             }|];
           )
     )

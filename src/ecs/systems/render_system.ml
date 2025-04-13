@@ -54,7 +54,16 @@ let render_entity world camera camera_pos entity position drawable =
     match Hashtbl.find_opt world.state.character_store entity with
     | Some character -> character.facing_right
     | None -> true (* Default facing right if no character component *)
+in
+
+   
+  let (drawable_width, drawable_height) =
+    match drawable.texture with
+    | Image i -> Gfx.surface_size i
+    | Animation a -> Gfx.surface_size a.frames.(0)
+    | _ -> (0,0)
   in
+
   
   let screen_width, screen_height = Gfx.get_context_logical_size world.ctx in
   let screen_width_f = float_of_int screen_width in
@@ -62,8 +71,9 @@ let render_entity world camera camera_pos entity position drawable =
   
   let screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f position.pos in
   
-  let scaled_width = int_of_float (float_of_int drawable.width *. camera.Camera.zoom) in
-  let scaled_height = int_of_float (float_of_int drawable.height *. camera.Camera.zoom) in
+  
+  let scaled_width = int_of_float (float_of_int drawable_width *. camera.Camera.zoom) in
+  let scaled_height = int_of_float (float_of_int drawable_height *. camera.Camera.zoom) in
 
   if not facing_right then
     Gfx.set_transform world.ctx 0.0 true false (* Horizontal flip *)

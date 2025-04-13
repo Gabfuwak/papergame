@@ -35,8 +35,8 @@ let create_player world x y tex =
         Gfx.debug "Error: texture %s does not exist\n" tex;
         Color black
   in
-
-  let drawable = { screen_pos = Vector.create 0.0 0.0; width = 200; height = 200; texture = texture } in
+  
+  let drawable = { texture = texture } in
 
   Hashtbl.add world.state.drawable_store id drawable;
 
@@ -57,16 +57,23 @@ let create_player world x y tex =
 
   Hashtbl.add world.state.character_store id character;
 
-  let hitbox = {
-    boxtype = "";
-    pos = Vector.create 0.0 0.0;
-    width = 200.0;
-    height = 200.0;
-  } in
+
+  let hitboxes =
+    match Hashtbl.find_opt world.resources.texture_hitboxes tex with
+    | Some text -> text.(0)
+    | None -> 
+         [|{
+            boxtype = "vulnerable";
+            pos = Vector.create 0.0 0.0;
+            width = 200.0;
+            height = 200.0;
+         }|]
+  in
+
 
   let collider = {
     origin_pos = position.pos;
-    boxes = [| hitbox |];
+    boxes = hitboxes;
     weight = 100.0;
   } in
 
@@ -119,9 +126,6 @@ let create_wall world x y width height =
   let black = Gfx.color 0 0 0 255 in
   let texture = Color black in
   let drawable = {
-    screen_pos = Vector.create x y;
-    width = int_of_float width;
-    height = int_of_float height;
     texture = texture
   } in
   
