@@ -1,3 +1,4 @@
-hitbox:[name]:1:vulnerable:173:166:195:322
-hitbox:[name]:2:vulnerable:173:166:195:322
-hitbox:[name]:3:vulnerable:173:166:195:322
+reference:[name]:284:392
+hitbox:[name]:1:vulnerable:206:174:170:307
+hitbox:[name]:2:vulnerable:206:174:170:307
+hitbox:[name]:3:vulnerable:206:174:170:307

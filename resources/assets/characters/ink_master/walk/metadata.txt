@@ -1,3 +1,4 @@
+reference:[name]:240:270
 hitbox:[name]:1:vulnerable:157:15:191:342
 hitbox:[name]:2:vulnerable:157:15:191:342
 hitbox:[name]:3:vulnerable:157:15:191:342

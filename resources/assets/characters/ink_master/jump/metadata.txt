@@ -1,2 +1,4 @@
-hitbox:characters/ink_master/jump/jumping:0:vulnerable:141:124:216:364
-hitbox:characters/ink_master/jump/falling:0:vulnerable:154:131:176:329
+hitbox:characters/ink_master/jump/jumping:vulnerable:193:155:156:326
+reference:characters/ink_master/jump/jumping:240:380
+hitbox:characters/ink_master/jump/falling:vulnerable:179:146:154:301
+reference:characters/ink_master/jump/falling:240:380

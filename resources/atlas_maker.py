@@ -22,7 +22,7 @@ def extract_framerate_from_name(name):
 
 class MetadataItem:
     def __init__(self, item_type, animation_name, data):
-        self.item_type = item_type  # "hitbox" only now
+        self.item_type = item_type  # "hitbox" or "reference"
         self.animation_name = animation_name
         self.data = data  # Additional data specific to the item type
 
@@ -41,12 +41,23 @@ class HitboxData(MetadataItem):
         d = self.data
         return f"hitbox:{self.animation_name}:{d['start_frame']}:{d['boxtype']}:{d['x']}:{d['y']}:{d['width']}:{d['height']}"
 
+class ReferencePointData(MetadataItem):
+    def __init__(self, animation_name, x, y):
+        super().__init__("reference", animation_name, {
+            "x": int(x),
+            "y": int(y)
+        })
+
+    def to_metadata_string(self):
+        d = self.data
+        return f"reference:{self.animation_name}:{d['x']}:{d['y']}"
+
 class AtlasItem:
     def __init__(self, name):
         self.name = name
         self.x = 0
         self.y = 0
-        self.metadata_items = []  # For hitboxes only now
+        self.metadata_items = []  # For hitboxes and reference points
 
 class StaticTexture(AtlasItem):
     def __init__(self, name, path, image=None):
@@ -84,7 +95,7 @@ def is_animation_directory(dirpath, filenames):
     return any(re.search(r'\d+\.png$', f) for f in filenames)
 
 def parse_metadata_file(filepath, item_name):
-    """Parse a metadata.txt file and return hitbox data."""
+    """Parse a metadata.txt file and return metadata items."""
     metadata_items = []
 
     if not os.path.exists(filepath):
@@ -109,7 +120,7 @@ def parse_metadata_file(filepath, item_name):
                 
                 # Replace [item] with the actual animation path
                 animation_name = item_name
-                if placeholder == "[item]":
+                if placeholder == "[item]" or placeholder == "[name]":
                     metadata_items.append(HitboxData(
                         animation_name, start_frame, boxtype, x, y, width, height
                     ))
@@ -117,6 +128,23 @@ def parse_metadata_file(filepath, item_name):
                     # Keep any existing non-placeholder items as they are
                     metadata_items.append(HitboxData(
                         placeholder, start_frame, boxtype, x, y, width, height
+                    ))
+            
+            elif item_type == "reference" and len(parts) >= 4:
+                # Format: reference:[item]:x:y
+                # [item] should be replaced with the animation name
+                _, placeholder, x, y = parts[:4]
+                
+                # Replace [item] with the actual animation path
+                animation_name = item_name
+                if placeholder == "[item]" or placeholder == "[name]":
+                    metadata_items.append(ReferencePointData(
+                        animation_name, x, y
+                    ))
+                else:
+                    # Keep any existing non-placeholder items as they are
+                    metadata_items.append(ReferencePointData(
+                        placeholder, x, y
                     ))
 
     return metadata_items
@@ -185,6 +213,12 @@ def collect_assets(root_dir):
                                     item.data["y"],
                                     item.data["width"],
                                     item.data["height"]
+                                ))
+                            elif item.item_type == "reference":
+                                static_img.metadata_items.append(ReferencePointData(
+                                    name,
+                                    item.data["x"],
+                                    item.data["y"]
                                 ))
 
                 static_images.append(static_img)
@@ -257,25 +291,39 @@ def create_atlas(static_images, animations):
     # Add animation and texture metadata
     for anim in animations:
         metadata.append(f"anim:{anim.name}:{anim.x}:{anim.y}:{anim.width}:{anim.height}:{anim.frame_count}:{anim.framerate}")
-        # Add hitbox data
+        # Add hitbox and reference point data
         for item in anim.metadata_items:
-            # Make sure the animation name is properly set for this hitbox
-            hitbox_str = item.to_metadata_string()
-            # Replace [name] or [item] placeholders with the actual animation name
-            hitbox_str = hitbox_str.replace("hitbox:[name]:", f"hitbox:{anim.name}:")
-            hitbox_str = hitbox_str.replace("hitbox:[item]:", f"hitbox:{anim.name}:")
-            metadata.append(hitbox_str)
+            # Make sure the animation name is properly set for this metadata item
+            if item.item_type == "hitbox":
+                hitbox_str = item.to_metadata_string()
+                # Replace [name] or [item] placeholders with the actual animation name
+                hitbox_str = hitbox_str.replace("hitbox:[name]:", f"hitbox:{anim.name}:")
+                hitbox_str = hitbox_str.replace("hitbox:[item]:", f"hitbox:{anim.name}:")
+                metadata.append(hitbox_str)
+            elif item.item_type == "reference":
+                ref_str = item.to_metadata_string()
+                # Replace [name] or [item] placeholders with the actual animation name
+                ref_str = ref_str.replace("reference:[name]:", f"reference:{anim.name}:")
+                ref_str = ref_str.replace("reference:[item]:", f"reference:{anim.name}:")
+                metadata.append(ref_str)
 
     for img in static_images:
         metadata.append(f"tile:{img.name}:{img.x}:{img.y}:{img.width}:{img.height}")
-        # Add hitbox data
+        # Add hitbox and reference point data
         for item in img.metadata_items:
-            # Make sure the image name is properly set for this hitbox
-            hitbox_str = item.to_metadata_string()
-            # Replace [name] or [item] placeholders with the actual image name
-            hitbox_str = hitbox_str.replace("hitbox:[name]:", f"hitbox:{img.name}:")
-            hitbox_str = hitbox_str.replace("hitbox:[item]:", f"hitbox:{img.name}:")
-            metadata.append(hitbox_str)
+            # Make sure the image name is properly set for this metadata item
+            if item.item_type == "hitbox":
+                hitbox_str = item.to_metadata_string()
+                # Replace [name] or [item] placeholders with the actual image name
+                hitbox_str = hitbox_str.replace("hitbox:[name]:", f"hitbox:{img.name}:")
+                hitbox_str = hitbox_str.replace("hitbox:[item]:", f"hitbox:{img.name}:")
+                metadata.append(hitbox_str)
+            elif item.item_type == "reference":
+                ref_str = item.to_metadata_string()
+                # Replace [name] or [item] placeholders with the actual image name
+                ref_str = ref_str.replace("reference:[name]:", f"reference:{img.name}:")
+                ref_str = ref_str.replace("reference:[item]:", f"reference:{img.name}:")
+                metadata.append(ref_str)
 
     return atlas, metadata
 
@@ -300,10 +348,12 @@ def main():
     atlas, metadata = create_atlas(static_images, animations)
 
     atlas_path = os.path.join(OUTPUT_DIR, ATLAS_FILE)
+    os.makedirs(os.path.dirname(atlas_path), exist_ok=True)
     atlas.save(atlas_path)
     print(f"Saved atlas to {atlas_path}")
 
     metadata_path = os.path.join(OUTPUT_DIR, METADATA_FILE)
+    os.makedirs(os.path.dirname(metadata_path), exist_ok=True)
     with open(metadata_path, 'w') as f:
         for line in metadata:
             f.write(line + '\n')
