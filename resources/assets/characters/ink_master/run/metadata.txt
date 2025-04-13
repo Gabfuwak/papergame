@@ -1,8 +1,9 @@
-hitbox:[name]:1:vulnerable:164:48:222:338
-hitbox:[name]:2:vulnerable:164:48:222:338
-hitbox:[name]:3:vulnerable:164:48:222:338
-hitbox:[name]:4:vulnerable:164:48:222:338
-hitbox:[name]:5:vulnerable:164:48:222:338
-hitbox:[name]:6:vulnerable:164:48:222:338
-hitbox:[name]:7:vulnerable:164:48:222:338
-hitbox:[name]:8:vulnerable:164:48:222:338
+reference:[name]:260:290
+hitbox:[name]:1:vulnerable:154:43:240:335
+hitbox:[name]:2:vulnerable:154:43:240:335
+hitbox:[name]:3:vulnerable:154:43:240:335
+hitbox:[name]:4:vulnerable:154:43:240:335
+hitbox:[name]:5:vulnerable:154:43:240:335
+hitbox:[name]:6:vulnerable:154:43:240:335
+hitbox:[name]:7:vulnerable:154:43:240:335
+hitbox:[name]:8:vulnerable:154:43:240:335
