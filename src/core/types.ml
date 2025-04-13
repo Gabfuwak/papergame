@@ -1,11 +1,15 @@
 type texture =
   | Color of Gfx.color
-  | Image of Gfx.surface
+  | Image of {
+      surface: Gfx.surface;
+      reference: Vector.t;
+    }
   | Animation of {
       frames: Gfx.surface array;
       framerate: float;
       mutable current_frame: int;
       mutable accumulated_time: float;
+      reference: Vector.t;
     }
 
 type atlas_region = {

@@ -113,22 +113,46 @@ def parse_metadata_file(filepath, item_name):
 
             item_type = parts[0]
 
-            if item_type == "hitbox" and len(parts) >= 8:
-                # Format: hitbox:[item]:start_frame:boxtype:x:y:width:height
-                # [item] should be replaced with the animation name
-                _, placeholder, start_frame, boxtype, x, y, width, height = parts[:8]
-                
-                # Replace [item] with the actual animation path
-                animation_name = item_name
-                if placeholder == "[item]" or placeholder == "[name]":
-                    metadata_items.append(HitboxData(
-                        animation_name, start_frame, boxtype, x, y, width, height
-                    ))
-                else:
-                    # Keep any existing non-placeholder items as they are
-                    metadata_items.append(HitboxData(
-                        placeholder, start_frame, boxtype, x, y, width, height
-                    ))
+            if item_type == "hitbox":
+                # Check if we have enough parts for a hitbox
+                if len(parts) >= 7:  # Minimum required for either format
+                    _, placeholder, *rest = parts
+                    
+                    # Try to determine if format has start_frame by checking if 3rd field is numeric
+                    try:
+                        start_frame = int(rest[0])
+                        has_start_frame = True
+                    except (ValueError, IndexError):
+                        has_start_frame = False
+                    
+                    if has_start_frame and len(rest) >= 5:
+                        # Format: hitbox:[name]:start_frame:boxtype:x:y:width:height
+                        start_frame = int(rest[0])
+                        boxtype = rest[1]
+                        x, y, width, height = int(rest[2]), int(rest[3]), int(rest[4]), int(rest[5])
+                        
+                        if placeholder == "[item]" or placeholder == "[name]":
+                            animation_name = item_name
+                        else:
+                            animation_name = placeholder
+                            
+                        metadata_items.append(HitboxData(
+                            animation_name, start_frame, boxtype, x, y, width, height
+                        ))
+                    elif not has_start_frame and len(rest) >= 4:
+                        # Format: hitbox:characters/ink_master/jump/jumping:vulnerable:193:155:156:326
+                        boxtype = rest[0]
+                        x, y, width, height = int(rest[1]), int(rest[2]), int(rest[3]), int(rest[4])
+                        
+                        if placeholder == "[item]" or placeholder == "[name]":
+                            animation_name = item_name
+                        else:
+                            animation_name = placeholder
+                            
+                        # Use a default start_frame of 0 for this format
+                        metadata_items.append(HitboxData(
+                            animation_name, 0, boxtype, x, y, width, height
+                        ))
             
             elif item_type == "reference" and len(parts) >= 4:
                 # Format: reference:[item]:x:y
@@ -136,16 +160,14 @@ def parse_metadata_file(filepath, item_name):
                 _, placeholder, x, y = parts[:4]
                 
                 # Replace [item] with the actual animation path
-                animation_name = item_name
                 if placeholder == "[item]" or placeholder == "[name]":
-                    metadata_items.append(ReferencePointData(
-                        animation_name, x, y
-                    ))
+                    animation_name = item_name
                 else:
-                    # Keep any existing non-placeholder items as they are
-                    metadata_items.append(ReferencePointData(
-                        placeholder, x, y
-                    ))
+                    animation_name = placeholder
+                    
+                metadata_items.append(ReferencePointData(
+                    animation_name, x, y
+                ))
 
     return metadata_items
 
@@ -201,8 +223,17 @@ def collect_assets(root_dir):
                 if parent_metadata:
                     # Filter metadata items for this specific image
                     image_name = os.path.splitext(filename)[0]
+                    full_path_name = name  # This is the full path without extension
+                    
                     for item in parent_metadata:
-                        if item.animation_name == "" or item.animation_name == image_name:
+                        # Check if the item applies to this image by:
+                        # 1. Empty animation_name (applies to all)
+                        # 2. Matches just the filename
+                        # 3. Matches the full path
+                        if (item.animation_name == "" or 
+                            item.animation_name == image_name or 
+                            item.animation_name == full_path_name):
+                            
                             # Clone the item with the correct name
                             if item.item_type == "hitbox":
                                 static_img.metadata_items.append(HitboxData(

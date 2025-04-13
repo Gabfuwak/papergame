@@ -3,6 +3,7 @@ open Types
 type t = {
   textures : (string, Types.texture) Hashtbl.t;
   texture_hitboxes : (string, Collider.hitbox array array) Hashtbl.t;
+  texture_reference_points : (string, Vector.t) Hashtbl.t;
   files : (string, string) Hashtbl.t;
   fonts : (string, Gfx.font) Hashtbl.t;
 }
@@ -10,11 +11,12 @@ type t = {
 let create () = {
   textures = Hashtbl.create 10;
   texture_hitboxes = Hashtbl.create 10;
+  texture_reference_points = Hashtbl.create 10;
   files = Hashtbl.create 10;
   fonts = Hashtbl.create 10;
 }
 
-let parse_atlas_metadata content =
+let parse_atlas_metadata resources content =
   let lines = String.split_on_char '\n' content in
   let atlas_items = Hashtbl.create 64 in
   
@@ -22,6 +24,9 @@ let parse_atlas_metadata content =
     if String.length line > 0 then
       let parts = String.split_on_char ':' line in
       match parts with
+      | "reference" :: texture_name :: ref_x :: ref_y :: [] ->
+          let ref_point = Vector.create (float_of_string ref_x) (float_of_string ref_y) in
+          Hashtbl.add resources.texture_reference_points texture_name ref_point
       | "tile" :: name :: x :: y :: width :: height :: [] ->
           let region = {
             x = int_of_string x;
@@ -112,7 +117,7 @@ let extract_region ctx atlas region =
   surface
 
 let process_atlas resources ctx atlas metadata =
-  let atlas_items = parse_atlas_metadata metadata in
+  let atlas_items = parse_atlas_metadata resources metadata in
 
   
   Hashtbl.iter (fun name item ->
@@ -120,7 +125,16 @@ let process_atlas resources ctx atlas metadata =
     | StaticTile region ->
         let surface = extract_region ctx atlas region in
         Gfx.debug "Added StaticTile %s\n" name;
-        Hashtbl.add resources.textures name (Image surface)
+      let reference =
+        match Hashtbl.find_opt resources.texture_reference_points name with
+        | Some ref_point -> 
+            Gfx.debug "Found reference for static image %s: (%f, %f)" name ref_point.x ref_point.y;
+            ref_point
+        | None -> 
+            Gfx.debug "No reference found for static image %s, using default" name;
+            Vector.create 0.0 0.0
+        in
+        Hashtbl.add resources.textures name (Image { surface; reference })
         
     | AnimationItem { base_region; frames; framerate } ->
         let frame_surfaces = Array.init frames (fun i ->
@@ -132,10 +146,18 @@ let process_atlas resources ctx atlas metadata =
           } in
           extract_region ctx atlas frame_region
         ) in
+
+        let reference = 
+          match Hashtbl.find_opt resources.texture_reference_points name with
+          | Some ref_point -> ref_point
+          | None -> Vector.create 0.0 0.0
+        in
+
         
         let animation = Animation {
           frames = frame_surfaces;
           framerate;
+          reference;
           current_frame = 0;
           accumulated_time = 0.0;
         } in

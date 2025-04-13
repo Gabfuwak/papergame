@@ -59,7 +59,7 @@ in
    
   let (drawable_width, drawable_height) =
     match drawable.texture with
-    | Image i -> Gfx.surface_size i
+    | Image i -> Gfx.surface_size i.surface
     | Animation a -> Gfx.surface_size a.frames.(0)
     | _ -> (0,0)
   in
@@ -68,9 +68,20 @@ in
   let screen_width, screen_height = Gfx.get_context_logical_size world.ctx in
   let screen_width_f = float_of_int screen_width in
   let screen_height_f = float_of_int screen_height in
+
+
+  let ref_offset = get_reference drawable in
   
-  let screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f position.pos in
-  
+  let adjusted_pos = 
+  if not facing_right then
+    (* For flipped sprites, adjust the x position to account for flipping *)
+    let flipped_ref = Vector.create (float_of_int drawable_width -. ref_offset.x) ref_offset.y in
+    Vector.sub position.pos flipped_ref
+  else
+    Vector.sub position.pos ref_offset
+  in
+
+  let screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f adjusted_pos in
   
   let scaled_width = int_of_float (float_of_int drawable_width *. camera.Camera.zoom) in
   let scaled_height = int_of_float (float_of_int drawable_height *. camera.Camera.zoom) in
@@ -87,8 +98,8 @@ in
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
       scaled_width scaled_height;
         
-  | Image surface ->
-      Gfx.blit_scale world.ctx world.window_surface surface
+  | Image i ->
+      Gfx.blit_scale world.ctx world.window_surface i.surface
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
       scaled_width scaled_height;
         
@@ -102,26 +113,46 @@ in
 
 
 (* DEBUG *)
-let render_hitbox world camera camera_pos position collider =
+let render_hitbox world camera camera_pos position collider drawable =
   let hitbox_color = Gfx.color 255 0 0 128 in  (* Semi-transparent red *)
   Gfx.set_color world.ctx hitbox_color;
-  
+
   let screen_width, screen_height = Gfx.get_context_logical_size world.ctx in
   let screen_width_f = float_of_int screen_width in
   let screen_height_f = float_of_int screen_height in
 
+  (* Render hitboxes first *)
   Array.iter (fun box ->
     let box_world_pos = Vector.add position.pos box.C.pos in
-    
+
     let screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f box_world_pos in
-    
+
     let scaled_width = int_of_float (box.C.width *. camera.Camera.zoom) in
     let scaled_height = int_of_float (box.C.height *. camera.Camera.zoom) in
-    
+
     Gfx.fill_rect world.ctx world.window_surface
       (int_of_float screen_pos.x) (int_of_float screen_pos.y)
       scaled_width scaled_height
-  ) collider.C.boxes
+  ) collider.C.boxes;
+  
+  (* Draw entity position marker (blue dot) *)
+  let entity_screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f position.pos in
+  Gfx.set_color world.ctx (Gfx.color 0 0 255 255); (* Blue *)
+  let marker_size = 5 in
+  Gfx.fill_rect world.ctx world.window_surface
+    (int_of_float entity_screen_pos.x - marker_size/2) 
+    (int_of_float entity_screen_pos.y - marker_size/2)
+    marker_size marker_size;
+    
+  (* Draw reference point (green dot) *)
+  let ref_offset = get_reference drawable in
+  let ref_world_pos = Vector.add position.pos (Vector.scale ref_offset (-1.0)) in
+  let ref_screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f ref_world_pos in
+  Gfx.set_color world.ctx (Gfx.color 0 255 0 255); (* Green *)
+  Gfx.fill_rect world.ctx world.window_surface
+    (int_of_float ref_screen_pos.x - marker_size/2) 
+    (int_of_float ref_screen_pos.y - marker_size/2)
+    marker_size marker_size
 
 
 let update world =
@@ -144,10 +175,10 @@ let update world =
            
            if world.debug_hitboxes then
              Hashtbl.iter (fun entity collider ->
-               match Hashtbl.find_opt world.state.position_store entity with
-               | Some position -> 
-                   render_hitbox world camera camera_pos position collider
-               | None -> ()
+               match Hashtbl.find_opt world.state.position_store entity, Hashtbl.find_opt world.state.drawable_store entity with
+               | Some position, Some drawable-> 
+                   render_hitbox world camera camera_pos position collider drawable
+               | _-> ()
              ) world.state.collider_store
        | _, _ -> 
            Gfx.set_color world.ctx (Gfx.color 255 0 255 255); (* Magenta *)
@@ -159,12 +190,3 @@ let update world =
   
   (* Finalize rendering *)
   Gfx.commit world.ctx
-
-
-
-
-
-
-
-
-
