@@ -55,7 +55,7 @@ hitbox:characters/ink_master/jump/recall:4:vulnerable:188:166:164:318
 hitbox:characters/ink_master/jump/recall:5:vulnerable:201:173:156:310
 hitbox:characters/ink_master/jump/recall:6:vulnerable:201:175:161:308
 hitbox:characters/ink_master/jump/recall:7:vulnerable:206:175:160:310
-anim:characters/ink_master/jump/prep:0:1860:400:500:4:12
+anim:characters/ink_master/jump/prep:0:1860:400:500:4:48
 reference:characters/ink_master/jump/prep:240:380
 hitbox:characters/ink_master/jump/prep:1:vulnerable:137:214:231:274
 hitbox:characters/ink_master/jump/prep:2:vulnerable:137:214:231:274

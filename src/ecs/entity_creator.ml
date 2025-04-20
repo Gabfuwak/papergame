@@ -94,11 +94,8 @@ let create_camera world target x y width height zoom =
     offset = Vector.create 0.0 0.0;
   } in
   
-  let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
-  
   Hashtbl.add world.state.position_store id position;
   Hashtbl.add world.state.camera_store id camera;
-  Hashtbl.add world.state.movable_store id movable;
   
   if world.active_camera_id = None then
     world.active_camera_id <- Some id;
