@@ -23,3 +23,4 @@ hitbox:[name]:14:vulnerable:435:129:209:300
 hitbox:[name]:14:vulnerable:435:129:209:300
 hitbox:[name]:15:vulnerable:435:129:209:300
 hitbox:[name]:15:vulnerable:435:129:209:300
+reference:[name]:340:330

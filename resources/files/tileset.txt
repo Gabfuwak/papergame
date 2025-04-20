@@ -42,6 +42,7 @@ hitbox:characters/ink_master/attack_up:14:vulnerable:435:129:209:300
 hitbox:characters/ink_master/attack_up:14:vulnerable:435:129:209:300
 hitbox:characters/ink_master/attack_up:15:vulnerable:435:129:209:300
 hitbox:characters/ink_master/attack_up:15:vulnerable:435:129:209:300
+reference:characters/ink_master/attack_up:340:330
 anim:characters/ink_master/jump/top:0:860:400:500:2:12
 reference:characters/ink_master/jump/top:240:380
 hitbox:characters/ink_master/jump/top:1:vulnerable:185:142:138:286
@@ -55,7 +56,7 @@ hitbox:characters/ink_master/jump/recall:4:vulnerable:188:166:164:318
 hitbox:characters/ink_master/jump/recall:5:vulnerable:201:173:156:310
 hitbox:characters/ink_master/jump/recall:6:vulnerable:201:175:161:308
 hitbox:characters/ink_master/jump/recall:7:vulnerable:206:175:160:310
-anim:characters/ink_master/jump/prep:0:1860:400:500:4:48
+anim:characters/ink_master/jump/prep:0:1860:400:500:4:12
 reference:characters/ink_master/jump/prep:240:380
 hitbox:characters/ink_master/jump/prep:1:vulnerable:137:214:231:274
 hitbox:characters/ink_master/jump/prep:2:vulnerable:137:214:231:274
@@ -90,6 +91,7 @@ hitbox:characters/ink_master/attack_forward:7:vulnerable:229:113:275:322
 hitbox:characters/ink_master/attack_forward:8:vulnerable:229:113:275:322
 hitbox:characters/ink_master/attack_forward:9:vulnerable:229:113:275:322
 hitbox:characters/ink_master/attack_forward:10:vulnerable:229:113:275:322
+reference:characters/ink_master/attack_forward:370:350
 tile:missing:0:3760:512:512
 tile:characters/ink_master/jump/jumping:512:3760:400:500
 hitbox:characters/ink_master/jump/jumping:1:vulnerable:193:155:156:326

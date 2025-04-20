@@ -11,3 +11,4 @@ hitbox:[name]:7:vulnerable:229:113:275:322
 hitbox:[name]:8:vulnerable:229:113:275:322
 hitbox:[name]:9:vulnerable:229:113:275:322
 hitbox:[name]:10:vulnerable:229:113:275:322
+reference:[name]:370:350
