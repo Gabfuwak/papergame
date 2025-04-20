@@ -15,11 +15,15 @@ let create_player world x y tex =
   let position = { pos = Vector.create x y } in
   let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
   let controls = Hashtbl.create 10 in
+  let attack_forward_control = Attack {attack_type = 0} in
+  let attack_up_control = Attack {attack_type = 1} in
   Hashtbl.add controls Up "up";
   Hashtbl.add controls Down "down";
   Hashtbl.add controls Left "left";
   Hashtbl.add controls Right "right";
   Hashtbl.add controls Jump "space";
+  Hashtbl.add controls attack_forward_control "a";
+  Hashtbl.add controls attack_up_control "e";
   let controllable = {controls = controls} in
   
   Hashtbl.add world.state.position_store id position;

@@ -130,6 +130,10 @@ let string_of_action action =
   | Down -> "Down"
   | Up -> "Up"
   | Jump -> "Jump"
+  | Attack { attack_type = 0 } -> "attack_forward"
+  | Attack {attack_type=1} -> "attack_up"
+  | _ -> failwith "unreachable"
+
 
 let is_action_made world action controllable =
   match Hashtbl.find_opt controllable.controls action with
@@ -252,13 +256,33 @@ let process_ground_transition world character controllable movable position draw
     true
   )
 
+let process_attack_transition world prev_state character controllable drawable =
+  let attack_forward_control = Attack {attack_type = 0} in
+  let attack_forward_state = Attacking {attack_type = 0} in
+  let attack_up_control = Attack {attack_type = 1} in
+  let attack_up_state = Attacking {attack_type = 1} in
+  if is_action_made world attack_forward_control controllable then(
+    transition_state world prev_state attack_forward_state character drawable;
+    true
+  )
+  else if is_action_made world attack_up_control controllable then (
+    transition_state world prev_state attack_up_state character drawable;
+    true
+  )
+  else
+    false
+  
+    
+
+
 let update_character entity character controllable position movable drawable dt world =
   character.time_in_state <- character.time_in_state +. dt;
   
   (*the transition processing functions *)
   (match character.current_state with
   | Idle ->
-    let active = process_jump_prep_transition world Idle character controllable movable drawable in
+    let active = process_attack_transition world Idle character controllable drawable in
+    let active = if not active then process_jump_prep_transition world Idle character controllable movable drawable else active in
     let active = if not active then process_run_transition world Idle character controllable movable drawable else active in
     if not active then
         ignore @@ process_idle_transition world Idle character controllable movable drawable
@@ -304,8 +328,16 @@ let update_character entity character controllable position movable drawable dt 
     if not active && is_animation_complete drawable then(
         ignore @@ process_ground_transition world character controllable movable position drawable;
       )
+    | Attacking {attack_type} -> 
+        let curr_state = Attacking{attack_type=attack_type} in
+        if attack_type == 0 && is_animation_complete drawable then(
+          ignore @@ process_idle_transition world curr_state character controllable movable drawable
+        )
+        else if attack_type == 1 && is_animation_complete drawable then(
+          ignore @@ process_idle_transition world curr_state character controllable movable drawable
+        )
 
-  | _ -> ());
+    | _ -> ());
 
    update_entity_hitboxes world entity character drawable
   

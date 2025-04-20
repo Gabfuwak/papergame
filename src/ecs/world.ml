@@ -62,7 +62,9 @@ let setup_keys k_names keys =
   Hashtbl.add k_names "i" "i";
   Hashtbl.add k_names "j" "j";
   Hashtbl.add k_names "k" "k";
-  Hashtbl.add k_names "l" "l"
+  Hashtbl.add k_names "l" "l";
+  Hashtbl.add k_names "a" "a";
+  Hashtbl.add k_names "e" "e"
 
 let create window keys = 
   let context = Gfx.get_context window in
@@ -89,7 +91,7 @@ let create window keys =
 
     active_camera_id = None;
 
-    debug_hitboxes = true;
+    debug_hitboxes = false;
   }
 
 
