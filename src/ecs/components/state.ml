@@ -12,7 +12,7 @@ module Character = struct
     | Walking
     | Running
     | Attacking of { attack_type: int}
-    | Hit of { stun_frames: int }
+    | Hit of { stun_time: float; remaining_time: float; hit_vector: Vector.t }
     | JumpPrep
     | Jumping
     | JumpTop
@@ -27,6 +27,7 @@ module Character = struct
     mutable time_in_state: float;
     mutable facing_right: bool;  (* true = facing right, false = facing left *)
     mutable is_grounded: bool;
+    mutable pending_hit: (Vector.t * float) option;
   }
 
 let get_animation_key char_name state = 
@@ -37,7 +38,8 @@ let get_animation_key char_name state =
   | Attacking { attack_type = 0 } -> "characters/" ^ char_name ^ "/attack_forward"
   | Attacking { attack_type = 1 } -> "characters/" ^ char_name ^ "/attack_up"
   | Attacking _ -> failwith "unreachable" (*to make the pattern exhaustive*)
-  | Hit _ -> "characters/" ^ char_name ^ "/hit"
+  (* | Hit _ -> "characters/" ^ char_name ^ "/hit" *)
+  | Hit _ -> "characters/" ^ char_name ^ "/jump/falling" (*placeholder*)
   | JumpPrep -> "characters/" ^ char_name ^ "/jump/prep"
   | Jumping -> "characters/" ^ char_name ^ "/jump/jumping" 
   | JumpTop -> "characters/" ^ char_name ^ "/jump/top" 

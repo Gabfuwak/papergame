@@ -274,6 +274,19 @@ let process_attack_transition world prev_state character controllable movable dr
   else
     false
   
+let process_hit_transition world prev_state character movable drawable =
+  match character.pending_hit with
+  | Some (hit_vector, stun_time) ->
+      character.pending_hit <- None;
+      
+      movable.velocity <- hit_vector;
+      
+      transition_state world prev_state 
+          (Hit { stun_time; remaining_time = stun_time; hit_vector }) 
+          character drawable;
+      true
+  | None ->
+      false
     
 
 
@@ -283,33 +296,38 @@ let update_character entity character controllable position movable drawable dt 
   (*the transition processing functions *)
   (match character.current_state with
   | Idle ->
-    let active = process_attack_transition world Idle character controllable movable drawable in
-    let active = if not active then process_jump_prep_transition world Idle character controllable movable drawable else active in
-    let active = if not active then process_run_transition world Idle character controllable movable drawable else active in
-    if not active then
+    let state_changed = process_hit_transition world Idle character movable drawable in
+    let state_changed = if not state_changed then process_attack_transition world Idle character controllable movable drawable else state_changed in
+    let state_changed = if not state_changed then process_jump_prep_transition world Idle character controllable movable drawable else state_changed in
+    let state_changed = if not state_changed then process_run_transition world Idle character controllable movable drawable else state_changed in
+    if not state_changed then
         ignore @@ process_idle_transition world Idle character controllable movable drawable
 
   | Running ->
-    let active = process_attack_transition world Idle character controllable movable drawable in
+    let active = process_hit_transition world Running character movable drawable in
+    let active = if not active then process_attack_transition world Running character controllable movable drawable else active in
     let active = if not active then process_jump_prep_transition world Running character controllable movable drawable else active in
     let active = if not active then process_run_transition world Running character controllable movable drawable else active in
     if not active then
       ignore @@ process_idle_transition world Running character controllable movable drawable
 
   | JumpPrep ->
-    if is_animation_complete drawable then
+    let active = process_hit_transition world JumpPrep character movable drawable in
+    if is_animation_complete drawable && not active then
       ignore @@ process_jumping_transition world character controllable movable drawable
     else
        ignore @@ process_jump_prep_transition world JumpPrep character controllable movable drawable;
       
 
   | Jumping ->
-    let state_changed = process_jump_top_transition world character controllable movable drawable in
+    let state_changed = process_hit_transition world Jumping character movable drawable in
+    let state_changed = if not state_changed then process_jump_top_transition world character controllable movable drawable else state_changed in
     if not state_changed then
       ignore @@ process_jumping_continue world character controllable movable drawable;
 
   | JumpTop ->
-    let state_changed = process_jump_recall_transition world JumpTop character controllable movable drawable in
+    let state_changed = process_hit_transition world JumpTop character movable drawable in
+    let state_changed = if not state_changed then process_jump_recall_transition world JumpTop character controllable movable drawable else state_changed in
     if not state_changed then
       if is_animation_complete drawable then
         ignore @@ process_falling_transition world JumpTop character controllable movable drawable
@@ -317,31 +335,48 @@ let update_character entity character controllable position movable drawable dt 
         ignore @@ process_jump_top_transition world character controllable movable drawable 
 
   | Falling ->
-    let state_changed = process_jump_recall_transition world Falling character controllable movable drawable in
+    let state_changed = process_hit_transition world Falling character movable drawable in
+    let state_changed = if not state_changed then process_jump_recall_transition world Falling character controllable movable drawable else state_changed in
     if not state_changed then
       ignore @@ process_continue_falling_transition world character controllable movable drawable
 
   | JumpRecall ->
-    let active = process_jump_prep_transition world JumpRecall character controllable movable drawable in
-    let active = if not active then process_run_transition world JumpRecall character controllable movable drawable else active in
-    if active then(
+    let state_changed = process_hit_transition world JumpRecall character movable drawable in
+    let state_changed = if not state_changed then process_jump_prep_transition world JumpRecall character controllable movable drawable else state_changed in
+    let state_changed = if not state_changed then process_run_transition world JumpRecall character controllable movable drawable else state_changed in
+    if state_changed then(
       let x_correction = if character.facing_right then 44.0 else -44.0 in
       position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 12.0);
     );
-    if not active && is_animation_complete drawable then(
+    if not state_changed && is_animation_complete drawable then(
         ignore @@ process_ground_transition world character controllable movable position drawable;
       )
     | Attacking {attack_type} -> 
         let curr_state = Attacking{attack_type=attack_type} in
-        if attack_type == 0 && is_animation_complete drawable then(
+        let state_changed = process_hit_transition world curr_state character movable drawable in
+        if not state_changed && attack_type == 0 && is_animation_complete drawable then(
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
-        else if attack_type == 1 && is_animation_complete drawable then(
+        else if not state_changed && attack_type == 1 && is_animation_complete drawable then(
           let x_correction = if character.facing_right then 175.0 else -175.0 in
           position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 10.0);
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
 
+    | Hit { stun_time; remaining_time; hit_vector } ->
+        let new_remaining = remaining_time -. dt in
+        
+        movable.force <- Vector.add movable.force hit_vector;
+        
+        if new_remaining <= 0.0 then
+          if character.is_grounded then
+            transition_state world character.current_state Idle character drawable
+          else
+            transition_state world character.current_state Falling character drawable
+        else
+          transition_state world character.current_state 
+            (Hit { stun_time; remaining_time = new_remaining; hit_vector }) 
+            character drawable
     | _ -> ());
 
    update_entity_hitboxes world entity character drawable

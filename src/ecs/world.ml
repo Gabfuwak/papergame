@@ -91,7 +91,7 @@ let create window keys =
 
     active_camera_id = None;
 
-    debug_hitboxes = true;
+    debug_hitboxes = false;
   }
 
 
