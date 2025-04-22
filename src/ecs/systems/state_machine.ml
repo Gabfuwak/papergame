@@ -256,16 +256,18 @@ let process_ground_transition world character controllable movable position draw
     true
   )
 
-let process_attack_transition world prev_state character controllable drawable =
+let process_attack_transition world prev_state character controllable movable drawable =
   let attack_forward_control = Attack {attack_type = 0} in
   let attack_forward_state = Attacking {attack_type = 0} in
   let attack_up_control = Attack {attack_type = 1} in
   let attack_up_state = Attacking {attack_type = 1} in
   if is_action_made world attack_forward_control controllable then(
+    movable.velocity.x <- 0.0;
     transition_state world prev_state attack_forward_state character drawable;
     true
   )
   else if is_action_made world attack_up_control controllable then (
+    movable.velocity.x <- 0.0;
     transition_state world prev_state attack_up_state character drawable;
     true
   )
@@ -281,14 +283,15 @@ let update_character entity character controllable position movable drawable dt 
   (*the transition processing functions *)
   (match character.current_state with
   | Idle ->
-    let active = process_attack_transition world Idle character controllable drawable in
+    let active = process_attack_transition world Idle character controllable movable drawable in
     let active = if not active then process_jump_prep_transition world Idle character controllable movable drawable else active in
     let active = if not active then process_run_transition world Idle character controllable movable drawable else active in
     if not active then
         ignore @@ process_idle_transition world Idle character controllable movable drawable
 
   | Running ->
-    let active = process_jump_prep_transition world Running character controllable movable drawable in
+    let active = process_attack_transition world Idle character controllable movable drawable in
+    let active = if not active then process_jump_prep_transition world Running character controllable movable drawable else active in
     let active = if not active then process_run_transition world Running character controllable movable drawable else active in
     if not active then
       ignore @@ process_idle_transition world Running character controllable movable drawable
@@ -334,6 +337,8 @@ let update_character entity character controllable position movable drawable dt 
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
         else if attack_type == 1 && is_animation_complete drawable then(
+          let x_correction = if character.facing_right then 175.0 else -175.0 in
+          position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 10.0);
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
 
