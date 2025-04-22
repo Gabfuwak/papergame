@@ -27,11 +27,8 @@ hitbox:characters/ink_master/attack_up:7:vulnerable:293:94:165:325
 hitbox:characters/ink_master/attack_up:8:vulnerable:369:140:183:282
 hitbox:characters/ink_master/attack_up:8:attack:224:15:394:145
 hitbox:characters/ink_master/attack_up:9:vulnerable:402:163:231:262
-hitbox:characters/ink_master/attack_up:9:vulnerable:369:140:183:282
 hitbox:characters/ink_master/attack_up:9:attack:262:23:448:203
 hitbox:characters/ink_master/attack_up:10:vulnerable:402:163:231:262
-hitbox:characters/ink_master/attack_up:10:vulnerable:402:163:231:262
-hitbox:characters/ink_master/attack_up:10:vulnerable:369:140:183:282
 hitbox:characters/ink_master/attack_up:10:attack:262:23:448:203
 hitbox:characters/ink_master/attack_up:11:vulnerable:402:163:231:262
 hitbox:characters/ink_master/attack_up:12:vulnerable:402:163:231:262

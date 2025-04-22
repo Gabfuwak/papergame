@@ -8,11 +8,8 @@ hitbox:[name]:7:vulnerable:293:94:165:325
 hitbox:[name]:8:vulnerable:369:140:183:282
 hitbox:[name]:8:attack:224:15:394:145
 hitbox:[name]:9:vulnerable:402:163:231:262
-hitbox:[name]:9:vulnerable:369:140:183:282
 hitbox:[name]:9:attack:262:23:448:203
 hitbox:[name]:10:vulnerable:402:163:231:262
-hitbox:[name]:10:vulnerable:402:163:231:262
-hitbox:[name]:10:vulnerable:369:140:183:282
 hitbox:[name]:10:attack:262:23:448:203
 hitbox:[name]:11:vulnerable:402:163:231:262
 hitbox:[name]:12:vulnerable:402:163:231:262
