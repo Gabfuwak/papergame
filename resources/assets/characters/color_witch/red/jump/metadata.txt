@@ -1,4 +1,4 @@
 reference:characters/color_witch/red/jump/falling:252:365
-hitbox:characters/color_witch/red/jump/falling:0:vulnerable:150:172:169:254
+hitbox:characters/color_witch/red/jump/falling:1:vulnerable:150:172:169:254
 reference:characters/color_witch/red/jump/jumping:264:363
-hitbox:characters/color_witch/red/jump/jumping:0:vulnerable:189:198:164:195
+hitbox:characters/color_witch/red/jump/jumping:1:vulnerable:189:198:164:195

@@ -289,7 +289,7 @@ hitbox:characters/color_witch/blue/jump/recall:3:vulnerable:225:192:132:212
 hitbox:characters/color_witch/blue/jump/recall:4:vulnerable:217:188:119:217
 hitbox:characters/color_witch/blue/jump/recall:5:vulnerable:182:140:137:262
 anim:characters/color_witch/blue/jump/prep:8100:1000:450:480:5:12
-reference:characters/color_witch/blue/jump/prep:241:360
+reference:characters/color_witch/blue/jump/prep:258:347
 hitbox:characters/color_witch/blue/jump/prep:1:vulnerable:174:153:139:251
 hitbox:characters/color_witch/blue/jump/prep:2:vulnerable:177:198:183:207
 hitbox:characters/color_witch/blue/jump/prep:3:vulnerable:177:198:183:207
@@ -335,7 +335,11 @@ tile:characters/extra/extra_character_d:16290:0:64:64
 tile:characters/extra/extra_character_b:16162:64:64:64
 tile:characters/extra/extra_character_e:16226:64:64:64
 tile:characters/color_witch/yellow/hit_fall:15660:1460:480:400
+reference:characters/color_witch/yellow/hit_fall:264:314
+hitbox:characters/color_witch/yellow/hit_fall:1:vulnerable:165:151:215:230
 tile:characters/color_witch/yellow/hit:15660:1860:480:400
+reference:characters/color_witch/yellow/hit:337:324
+hitbox:characters/color_witch/yellow/hit:1:vulnerable:166:112:234:272
 tile:characters/color_witch/yellow/jump/jumping:10800:1000:450:480
 reference:characters/color_witch/yellow/jump/jumping:264:363
 hitbox:characters/color_witch/yellow/jump/jumping:1:vulnerable:189:198:164:195
@@ -343,7 +347,11 @@ tile:characters/color_witch/yellow/jump/falling:11250:1000:450:480
 reference:characters/color_witch/yellow/jump/falling:252:365
 hitbox:characters/color_witch/yellow/jump/falling:1:vulnerable:150:172:169:254
 tile:characters/color_witch/red/hit_fall:14700:2260:480:400
+reference:characters/color_witch/red/hit_fall:264:314
+hitbox:characters/color_witch/red/hit_fall:1:vulnerable:165:151:215:230
 tile:characters/color_witch/red/hit:15180:2260:480:400
+reference:characters/color_witch/red/hit:337:324
+hitbox:characters/color_witch/red/hit:1:vulnerable:166:112:234:272
 tile:characters/color_witch/red/jump/jumping:11700:1460:450:480
 reference:characters/color_witch/red/jump/jumping:264:363
 hitbox:characters/color_witch/red/jump/jumping:1:vulnerable:189:198:164:195
@@ -351,10 +359,10 @@ tile:characters/color_witch/red/jump/falling:12150:1460:450:480
 reference:characters/color_witch/red/jump/falling:252:365
 hitbox:characters/color_witch/red/jump/falling:1:vulnerable:150:172:169:254
 tile:characters/color_witch/blue/hit_fall:15660:2260:480:400
-reference:characters/color_witch/blue/hit_fall:1:264
+reference:characters/color_witch/blue/hit_fall:264:314
 hitbox:characters/color_witch/blue/hit_fall:1:vulnerable:165:151:215:230
 tile:characters/color_witch/blue/hit:14700:2660:480:400
-reference:characters/color_witch/blue/hit:1:337
+reference:characters/color_witch/blue/hit:337:324
 hitbox:characters/color_witch/blue/hit:1:vulnerable:166:112:234:272
 tile:characters/color_witch/blue/jump/jumping:12600:1460:450:480
 reference:characters/color_witch/blue/jump/jumping:264:363

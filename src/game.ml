@@ -5,14 +5,14 @@ open Resources
 open Entity_creator
 
 let setup world = 
-  let width, height = Gfx.get_context_logical_size world.ctx in
+  let width, height = (1000, 1000) in
   let width_f = float_of_int width in
   let height_f = float_of_int height in
   let wall_thickness = 10.0 in
 
 
   (* Top *)
-  ignore @@ create_wall world 0.0 0.0 width_f wall_thickness;
+  (*ignore @@ create_wall world 0.0 0.0 width_f wall_thickness;*)
   (* Bottom *)
   ignore @@ create_wall world 0.0 (height_f -. wall_thickness) width_f wall_thickness;
   (* Left *)
@@ -20,10 +20,10 @@ let setup world =
   (* Right *)
   ignore @@ create_wall world (width_f -. wall_thickness) 0.0 10.0 height_f;
 
-  ignore @@ create_player world 100.0 100.0 "color_witch" (Some "red");
+  let player = create_player world 100.0 100.0 "color_witch" (Some "red") in
   ignore @@ create_target_dummy world 200.0 100.0 "ink_master" None;
 
-  ignore @@ create_camera world None (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.5;
+  ignore @@ create_camera world (Some player) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.5;
   ()
 
 
@@ -101,8 +101,14 @@ let run keys =
       Gfx.main_loop 
         (fun elapsed -> 
           let result = update world elapsed in
-          if world.dt > 20.0 then Gfx.debug "Slow frame: %.2f ms\n" world.dt;
-          result
+          if world.dt > 20.0 then(
+            Gfx.debug "Slow frame: %.2f ms\n" world.dt
+          )
+          else(
+            Gfx.debug "Current approx fps: %f\n" (1000.0/.world.dt)
+          );
+            result
+
         )
         (fun exit_message -> Gfx.debug "Game ended: %s\n" exit_message)
     )

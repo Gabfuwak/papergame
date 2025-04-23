@@ -243,8 +243,11 @@ let process_jump_recall_transition world prev_state character controllable movab
     false
 
 let process_ground_transition world character controllable movable position drawable =
-  let x_correction = if character.facing_right then 44.0 else -44.0 in
-  position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 12.0);
+
+  if character.char_name == "ink_master" then(
+    let x_correction = if character.facing_right then 44.0 else -44.0 in
+    position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 12.0);
+  );
 
   (* Check which ground state to return to based on input *)
   let is_moving = is_action_made world Left controllable || is_action_made world Right controllable in
@@ -344,7 +347,7 @@ let update_character entity character controllable position movable drawable dt 
     let state_changed = process_hit_transition world JumpRecall character movable drawable in
     let state_changed = if not state_changed then process_jump_prep_transition world JumpRecall character controllable movable drawable else state_changed in
     let state_changed = if not state_changed then process_run_transition world JumpRecall character controllable movable drawable else state_changed in
-    if state_changed then(
+    if state_changed && character.char_name == "ink_master" then(
       let x_correction = if character.facing_right then 44.0 else -44.0 in
       position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 12.0);
     );
@@ -358,8 +361,10 @@ let update_character entity character controllable position movable drawable dt 
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
         else if not state_changed && attack_type == 1 && is_animation_complete drawable then(
-          let x_correction = if character.facing_right then 175.0 else -175.0 in
-          position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 10.0);
+          if character.char_name == "ink_master" then(
+            let x_correction = if character.facing_right then 175.0 else -175.0 in
+            position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 10.0);
+          );
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
 
