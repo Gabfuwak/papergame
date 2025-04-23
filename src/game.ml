@@ -64,6 +64,8 @@ let update world elapsed =
 
   Camera_system.update world;
   Render_system.update world;
+
+  Gfx.debug "%!";
   
   if world.should_stop then
     Some world.exit_message
