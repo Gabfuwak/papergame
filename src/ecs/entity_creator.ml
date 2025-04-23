@@ -10,7 +10,7 @@ open Drawable
 open Camera
 open Vector
 
-let create_player world x y tex =
+let create_player world x y char_name variant =
   let id = Entity.create () in
   let position = { pos = Vector.create x y } in
   let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
@@ -31,6 +31,14 @@ let create_player world x y tex =
   Hashtbl.add world.state.controllable_store id controllable;
 
   let black = Gfx.color 0 0 0 255 in
+
+  let v = 
+    match variant with
+    | None -> ""
+    | Some s -> "/" ^ s
+  in
+
+  let tex = "characters/" ^ char_name ^ v ^ "/idle" in
   
   let texture =
     match Hashtbl.find_opt world.resources.textures tex with
@@ -58,6 +66,8 @@ let create_player world x y tex =
     Character.facing_right = true;
     Character.is_grounded = false;
     Character.pending_hit = None;
+    Character.char_name = char_name;
+    Character.variant = variant;
   } in
 
   Hashtbl.add world.state.character_store id character;
@@ -87,7 +97,7 @@ let create_player world x y tex =
   
   id
 
-let create_target_dummy world x y =
+let create_target_dummy world x y char_name variant =
   let id = Entity.create () in
   let position = { pos = Vector.create x y } in
   let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
@@ -126,6 +136,8 @@ let create_target_dummy world x y =
     Character.facing_right = true;
     Character.is_grounded = false;
     Character.pending_hit = None;
+    Character.char_name = char_name;
+    Character.variant = variant;
   } in
   
   Hashtbl.add world.state.character_store id character;

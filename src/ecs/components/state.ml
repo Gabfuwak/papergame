@@ -28,22 +28,29 @@ module Character = struct
     mutable facing_right: bool;  (* true = facing right, false = facing left *)
     mutable is_grounded: bool;
     mutable pending_hit: (Vector.t * float) option;
+    mutable char_name: string;
+    mutable variant: string option;
   }
 
-let get_animation_key char_name state = 
+let get_animation_key char state = 
+  let v = 
+    match char.variant with
+    | None -> ""
+    | Some s -> s ^ "/"
+  in
   match state with
-  | Idle -> "characters/" ^ char_name ^ "/idle"
-  | Walking -> "characters/" ^ char_name ^ "/walk"
-  | Running -> "characters/" ^ char_name ^ "/run"
-  | Attacking { attack_type = 0 } -> "characters/" ^ char_name ^ "/attack_forward"
-  | Attacking { attack_type = 1 } -> "characters/" ^ char_name ^ "/attack_up"
+  | Idle -> "characters/" ^ char.char_name ^ v ^ "/idle"
+  | Walking -> "characters/" ^ char.char_name ^ v ^ "/walk"
+  | Running -> "characters/" ^ char.char_name ^ v ^ "/run"
+  | Attacking { attack_type = 0 } -> "characters/" ^ char.char_name ^ v ^ "/attack_forward"
+  | Attacking { attack_type = 1 } -> "characters/" ^ char.char_name ^ v ^ "/attack_up"
   | Attacking _ -> failwith "unreachable" (*to make the pattern exhaustive*)
-  (* | Hit _ -> "characters/" ^ char_name ^ "/hit" *)
-  | Hit _ -> "characters/" ^ char_name ^ "/jump/falling" (*placeholder*)
-  | JumpPrep -> "characters/" ^ char_name ^ "/jump/prep"
-  | Jumping -> "characters/" ^ char_name ^ "/jump/jumping" 
-  | JumpTop -> "characters/" ^ char_name ^ "/jump/top" 
-  | Falling -> "characters/" ^ char_name ^ "/jump/falling" 
-  | JumpRecall -> "characters/" ^ char_name ^ "/jump/recall" 
-  | Dead -> "characters/" ^ char_name ^ "/dead"
+  (* | Hit _ -> "characters/" ^ char_name ^ v ^ "/hit" *)
+  | Hit _ -> "characters/" ^ char.char_name ^ v ^ "/jump/falling" (*placeholder*)
+  | JumpPrep -> "characters/" ^ char.char_name ^ v ^ "/jump/prep"
+  | Jumping -> "characters/" ^ char.char_name ^ v ^ "/jump/jumping" 
+  | JumpTop -> "characters/" ^ char.char_name ^ v ^ "/jump/top" 
+  | Falling -> "characters/" ^ char.char_name ^ v ^ "/jump/falling" 
+  | JumpRecall -> "characters/" ^ char.char_name ^ v ^ "/jump/recall" 
+  | Dead -> "characters/" ^ char.char_name ^ v ^ "/dead"
 end

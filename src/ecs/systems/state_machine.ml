@@ -23,8 +23,8 @@ let is_key_pressed world key =
   with Not_found ->
     false
 
-let switch_texture world state drawable =
-  let anim_key = get_animation_key "ink_master" state in
+let switch_texture world char state drawable =
+  let anim_key = get_animation_key char state in
   let texture =
     match Hashtbl.find_opt world.resources.textures anim_key with
     | Some tex -> 
@@ -54,7 +54,7 @@ let update_entity_hitboxes world entity character drawable =
     | _ -> (0,0)
   in
 
-  let anim_key = get_animation_key "ink_master" character.current_state in
+  let anim_key = get_animation_key character character.current_state in
 
 
   let ref_offset = get_reference drawable in
@@ -153,7 +153,7 @@ let transition_state world previous_state new_state character drawable =
   character.previous_state <- previous_state; (* not current state in case we do multiple things at the same time *)
   character.current_state <- new_state;
   if previous_state <> new_state then 
-    switch_texture world new_state drawable
+    switch_texture world character new_state drawable
 
 let process_run_transition world prev_state character controllable movable drawable =
   let state_changed = 
