@@ -1,0 +1,6 @@
+reference:[name]:217:286
+hitbox:[name]:1:vulnerable:108:124:247:216
+hitbox:[name]:2:vulnerable:108:124:247:216
+hitbox:[name]:3:vulnerable:108:124:247:216
+hitbox:[name]:4:vulnerable:108:124:247:216
+

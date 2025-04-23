@@ -1,0 +1,17 @@
+reference:[name]:229:302
+hitbox:[name]:1:vulnerable:169:86:134:264
+hitbox:[name]:2:vulnerable:169:86:134:264
+hitbox:[name]:3:vulnerable:169:86:134:264
+hitbox:[name]:4:vulnerable:169:86:134:264
+hitbox:[name]:5:vulnerable:169:86:134:264
+hitbox:[name]:6:vulnerable:169:86:134:264
+hitbox:[name]:7:vulnerable:169:86:134:264
+hitbox:[name]:8:vulnerable:169:86:134:264
+hitbox:[name]:9:vulnerable:169:86:134:264
+hitbox:[name]:10:vulnerable:169:86:134:264
+hitbox:[name]:11:vulnerable:169:86:134:264
+hitbox:[name]:12:vulnerable:169:86:134:264
+hitbox:[name]:13:vulnerable:169:86:134:264
+hitbox:[name]:14:vulnerable:169:86:134:264
+hitbox:[name]:15:vulnerable:169:86:134:264
+hitbox:[name]:16:vulnerable:169:86:134:264

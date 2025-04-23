@@ -1,0 +1,4 @@
+reference:characters/color_witch/yellow/jump/falling:252:365
+hitbox:characters/color_witch/yellow/jump/falling:0:vulnerable:150:172:169:254
+reference:characters/color_witch/yellow/jump/jumping:264:363
+hitbox:characters/color_witch/yellow/jump/jumping:0:vulnerable:189:198:164:195

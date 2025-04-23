@@ -1,0 +1,5 @@
+reference:characters/color_witch/blue/hit_fall:0:264:314
+hitbox:characters/color_witch/blue/hit_fall:vulnerable:165:151:215:230
+reference:characters/color_witch/blue/hit:0:337:324
+hitbox:characters/color_witch/blue/hit:0:vulnerable:166:112:234:272
+

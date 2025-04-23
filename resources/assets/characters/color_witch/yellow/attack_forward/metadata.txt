@@ -1,0 +1,13 @@
+reference:[name]:265:348
+hitbox:[name]:1:vulnerable:120:130:198:264
+hitbox:[name]:2:vulnerable:120:130:198:264
+hitbox:[name]:3:vulnerable:120:130:198:264
+hitbox:[name]:4:vulnerable:120:130:198:264
+hitbox:[name]:5:vulnerable:120:130:198:264
+hitbox:[name]:6:vulnerable:120:130:198:264
+hitbox:[name]:7:vulnerable:209:153:252:245
+hitbox:[name]:8:vulnerable:209:156:223:238
+hitbox:[name]:9:vulnerable:209:156:223:238
+hitbox:[name]:10:vulnerable:209:156:223:238
+hitbox:[name]:11:vulnerable:209:156:223:238
+hitbox:[name]:12:vulnerable:209:156:223:238
