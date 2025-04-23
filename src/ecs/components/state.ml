@@ -36,7 +36,7 @@ let get_animation_key char state =
   let v = 
     match char.variant with
     | None -> ""
-    | Some s -> s ^ "/"
+    | Some s -> "/" ^ s 
   in
   match state with
   | Idle -> "characters/" ^ char.char_name ^ v ^ "/idle"
