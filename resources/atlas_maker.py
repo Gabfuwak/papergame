@@ -272,51 +272,95 @@ def determine_atlas_width(animations):
 
     return width
 
+def find_best_position(skyline, texture_width, atlas_width):
+    if texture_width > atlas_width:
+        print(f"Warning: Texture width ({texture_width}) exceeds atlas width ({atlas_width})")
+        return 0
+    
+    best_x = 0
+    lowest_height = float('inf')
+    
+    # Try each possible position
+    for x in range(atlas_width - texture_width + 1):
+        # Find the maximum height in the region where we would place the texture
+        region_height = max(skyline[x:x + texture_width])
+        
+        # If this region has a lower height than our current best, use it
+        if region_height < lowest_height:
+            lowest_height = region_height
+            best_x = x
+    
+    return best_x
+
 def create_atlas(static_images, animations):
     atlas_width = determine_atlas_width(animations)
     print(f"Using atlas width of {atlas_width}px")
-
-    # each animation gets a row
-    current_y = 0
-    for anim in animations:
-        # calculate total width needed for this animation
-        total_width = anim.width * anim.frame_count
-
-        if total_width > atlas_width:
-            print(f"Warning: Animation {anim.name} is too wide ({total_width}px) for atlas width ({atlas_width}px)")
-            # For now, we'll just let it overflow TODO: add wrapping, but should rarely be a problem
-
-        anim.x = 0
-        anim.y = current_y
-
-        current_y += anim.height
-
-    current_x = 0
-    current_row_height = 0
-
-    for img in static_images:
-        if current_x + img.width > atlas_width:
-            current_x = 0
-            current_y += current_row_height
-            current_row_height = 0
-
-        img.x = current_x
-        img.y = current_y
-
-        current_x += img.width
-        current_row_height = max(current_row_height, img.height)
-
-    atlas_height = current_y + current_row_height
-
+    
+    rectangles = []
+    
+    # Add animations as rectangles
+    for i, anim in enumerate(animations):
+        rectangles.append({
+            "id": i,
+            "type": "animation",
+            "width": anim.width * anim.frame_count,
+            "height": anim.height,
+            "ref": anim
+        })
+    
+    # Add static images as rectangles
+    for i, img in enumerate(static_images):
+        rectangles.append({
+            "id": len(animations) + i,
+            "type": "static",
+            "width": img.width,
+            "height": img.height,
+            "ref": img
+        })
+    
+    rectangles.sort(key=lambda r: r["height"], reverse=True)
+    
+    # Initialize skyline
+    skyline = [0] * atlas_width
+    
+    for rect in rectangles:
+        width = rect["width"]
+        height = rect["height"]
+        
+        # Find best position (lowest skyline)
+        best_x = 0
+        best_y = float('inf')
+        
+        for x in range(atlas_width - width + 1):
+            # Get maximum height in this region
+            current_y = max(skyline[x:x + width])
+            
+            if current_y < best_y:
+                best_y = current_y
+                best_x = x
+        
+        rect["x"] = best_x
+        rect["y"] = best_y
+        
+        for i in range(best_x, best_x + width):
+            skyline[i] = best_y + height
+    
+    # map results back to original objects
+    for rect in rectangles:
+        item = rect["ref"]
+        item.x = rect["x"]
+        item.y = rect["y"]
+    
+    atlas_height = max(skyline)
     atlas = Image.new('RGBA', (atlas_width, atlas_height), (0, 0, 0, 0))
-
+    
     for anim in animations:
         for i, frame in enumerate(anim.frames):
             atlas.paste(frame, (anim.x + i * anim.width, anim.y))
-
+    
     for img in static_images:
         atlas.paste(img.image, (img.x, img.y))
-
+    
     metadata = []
 
     # Add animation and texture metadata
