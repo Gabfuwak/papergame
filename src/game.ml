@@ -5,10 +5,12 @@ open Resources
 open Entity_creator
 
 let setup world = 
-  let width, height = (800, 600) in
-  let width_f = float_of_int width in
-  let height_f = float_of_int height in
-  let height_w = 10000.0 in
+  let screen_w, screen_h = Gfx.get_window_size world.window in
+  let aspect_ratio = (float_of_int screen_w)/.(float_of_int screen_h) in
+  let height_f = 600.0 in (*default world space height of camera view*)
+  let width_f = height_f *. aspect_ratio in
+
+  let height_w = 1000.0 in
   let width_w = 10000.0 in
   let wall_thickness = 10.0 in
 
@@ -75,7 +77,9 @@ let update world elapsed =
     None
 
 let run keys =
-  let window = Gfx.create "game_canvas:1920x1080:" in
+  let screen_h = 1000 in
+  let screen_w = 1000 in
+  let window = Gfx.create ("game_canvas:"^ string_of_int screen_w ^"x"^string_of_int screen_h^":") in
   let world = World.create window keys in
 
   (* This is basically just doing Gfx.load_file and Gfx.load_image and putting it in a tuple *)

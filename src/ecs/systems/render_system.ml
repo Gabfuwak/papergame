@@ -1,6 +1,5 @@
 (* 
    TODO: 
-      - Camera placement handling so world pos and screen pos are not the same. 
       - Z index handling
 *)
 
@@ -15,25 +14,29 @@ let world_to_screen camera_pos camera screen_width screen_height world_pos =
   let rel_x = world_pos.x -. camera_pos.pos.x in
   let rel_y = world_pos.y -. camera_pos.pos.y in
   
-  let scaled_x = rel_x *. camera.Camera.zoom in
-  let scaled_y = rel_y *. camera.Camera.zoom in
+  let scaled_x = rel_x *. camera.Camera.zoom *. (screen_width /. camera.Camera.width) in
+  let scaled_y = rel_y *. camera.Camera.zoom *. (screen_height /. camera.Camera.height) in
   
   let screen_x = (screen_width /. 2.0) +. scaled_x in
   let screen_y = (screen_height /. 2.0) +. scaled_y in
-  
   Vector.create screen_x screen_y
 
 let screen_to_world camera_pos camera screen_width screen_height screen_pos =
   let rel_x = screen_pos.x -. (screen_width /. 2.0) in
   let rel_y = screen_pos.y -. (screen_height /. 2.0) in
   
-  let unscaled_x = rel_x /. camera.Camera.zoom in
-  let unscaled_y = rel_y /. camera.Camera.zoom in
+  let unscaled_x = rel_x /. camera.Camera.zoom /. (screen_width /. camera.Camera.width) in
+  let unscaled_y = rel_y /. camera.Camera.zoom /. (screen_height /. camera.Camera.height) in
   
   let world_x = unscaled_x +. camera_pos.pos.x in
   let world_y = unscaled_y +. camera_pos.pos.y in
-  
   Vector.create world_x world_y
+
+(* Helper function to calculate scaling factors *)
+let get_scaling_factors camera screen_width screen_height =
+  let width_scale = screen_width /. camera.Camera.width in
+  let height_scale = screen_height /. camera.Camera.height in
+  (width_scale, height_scale)
 
 let update_animation animation dt =
   match animation with
@@ -54,9 +57,8 @@ let render_entity world camera camera_pos entity position drawable =
     match Hashtbl.find_opt world.state.character_store entity with
     | Some character -> character.facing_right
     | None -> true (* Default facing right if no character component *)
-in
+  in
 
-   
   let (drawable_width, drawable_height) =
     match drawable.texture with
     | Image i -> Gfx.surface_size i.surface
@@ -64,27 +66,29 @@ in
     | _ -> (0,0)
   in
 
-  
   let screen_width, screen_height = Gfx.get_context_logical_size world.ctx in
   let screen_width_f = float_of_int screen_width in
   let screen_height_f = float_of_int screen_height in
-
+  
+  (* Get scaling factors based on camera and screen dimensions *)
+  let width_scale, height_scale = get_scaling_factors camera screen_width_f screen_height_f in
 
   let ref_offset = get_reference drawable in
   
   let adjusted_pos = 
-  if not facing_right then
-    (* For flipped sprites, adjust the x position to account for flipping *)
-    let flipped_ref = Vector.create (float_of_int drawable_width -. ref_offset.x) ref_offset.y in
-    Vector.sub position.pos flipped_ref
-  else
-    Vector.sub position.pos ref_offset
+    if not facing_right then
+      (* For flipped sprites, adjust the x position to account for flipping *)
+      let flipped_ref = Vector.create (float_of_int drawable_width -. ref_offset.x) ref_offset.y in
+      Vector.sub position.pos flipped_ref
+    else
+      Vector.sub position.pos ref_offset
   in
 
   let screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f adjusted_pos in
   
-  let scaled_width = int_of_float (float_of_int drawable_width *. camera.Camera.zoom) in
-  let scaled_height = int_of_float (float_of_int drawable_height *. camera.Camera.zoom) in
+  (* Apply both zoom and screen-to-world scaling *)
+  let scaled_width = int_of_float (float_of_int drawable_width *. camera.Camera.zoom *. width_scale) in
+  let scaled_height = int_of_float (float_of_int drawable_height *. camera.Camera.zoom *. height_scale) in
 
   if not facing_right then
     Gfx.set_transform world.ctx 0.0 true false (* Horizontal flip *)
@@ -96,18 +100,18 @@ in
       Gfx.set_color world.ctx color;
       Gfx.fill_rect world.ctx world.window_surface
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
-      scaled_width scaled_height;
+        scaled_width scaled_height;
         
   | Image i ->
       Gfx.blit_scale world.ctx world.window_surface i.surface
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
-      scaled_width scaled_height;
+        scaled_width scaled_height;
         
   | Animation anim ->
       let current_frame = anim.frames.(anim.current_frame) in
       Gfx.blit_scale world.ctx world.window_surface current_frame
         (int_of_float screen_pos.x) (int_of_float screen_pos.y)
-      scaled_width scaled_height;
+        scaled_width scaled_height;
 
   Gfx.reset_transform world.ctx
 
@@ -120,6 +124,8 @@ let render_hitbox world camera camera_pos position collider drawable =
   let screen_width, screen_height = Gfx.get_context_logical_size world.ctx in
   let screen_width_f = float_of_int screen_width in
   let screen_height_f = float_of_int screen_height in
+  
+  let width_scale, height_scale = get_scaling_factors camera screen_width_f screen_height_f in
 
   (* Render hitboxes first *)
   Array.iter (fun box ->
@@ -127,8 +133,9 @@ let render_hitbox world camera camera_pos position collider drawable =
 
     let screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f box_world_pos in
 
-    let scaled_width = int_of_float (box.C.width *. camera.Camera.zoom) in
-    let scaled_height = int_of_float (box.C.height *. camera.Camera.zoom) in
+    (* Apply both zoom and screen-to-world scaling *)
+    let scaled_width = int_of_float (box.C.width *. camera.Camera.zoom *. width_scale) in
+    let scaled_height = int_of_float (box.C.height *. camera.Camera.zoom *. height_scale) in
 
     Gfx.fill_rect world.ctx world.window_surface
       (int_of_float screen_pos.x) (int_of_float screen_pos.y)
@@ -138,7 +145,7 @@ let render_hitbox world camera camera_pos position collider drawable =
   (* Draw entity position marker (blue dot) *)
   let entity_screen_pos = world_to_screen camera_pos camera screen_width_f screen_height_f position.pos in
   Gfx.set_color world.ctx (Gfx.color 0 0 255 255); (* Blue *)
-  let marker_size = 5 in
+  let marker_size = int_of_float (5.0 *. camera.Camera.zoom *. ((width_scale +. height_scale) /. 2.0)) in
   Gfx.fill_rect world.ctx world.window_surface
     (int_of_float entity_screen_pos.x - marker_size/2) 
     (int_of_float entity_screen_pos.y - marker_size/2)
