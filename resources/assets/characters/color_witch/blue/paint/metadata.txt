@@ -1,0 +1,6 @@
+reference:[name]:102:74
+hitbox:[name]:1:attack:25:36:158:75
+hitbox:[name]:2:attack:25:36:158:75
+hitbox:[name]:3:attack:25:36:158:75
+hitbox:[name]:4:attack:25:36:158:75
+
