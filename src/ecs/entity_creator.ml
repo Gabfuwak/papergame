@@ -13,7 +13,7 @@ open Vector
 let create_player world x y char_name variant =
   let id = Entity.create () in
   let position = { pos = Vector.create x y } in
-  let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
+  let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0; gravity_scale = 1.0 } in
   let controls = Hashtbl.create 10 in
   let attack_forward_control = Attack {attack_type = 0} in
   let attack_up_control = Attack {attack_type = 1} in
@@ -100,7 +100,7 @@ let create_player world x y char_name variant =
 let create_target_dummy world x y char_name variant =
   let id = Entity.create () in
   let position = { pos = Vector.create x y } in
-  let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0 } in
+  let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0; gravity_scale = 1.0} in
   
   let controls = Hashtbl.create 10 in
   let controllable = {controls = controls} in
@@ -223,8 +223,9 @@ let create_projectile world x y animation_key direction source_entity =
   (* Add movable component with initial velocity *)
   let speed = 400.0 in (* Adjust projectile speed as needed *)
   let movable = { 
-    Movable.velocity = Vector.create (direction *. speed) 0.0;
-    Movable.force = Vector.create 0.0 0.0;
+    velocity = Vector.create (direction *. speed) 0.0;
+    force = Vector.create 0.0 0.0;
+    gravity_scale = 0.0;
   } in
   Hashtbl.add world.state.movable_store entity movable;
   

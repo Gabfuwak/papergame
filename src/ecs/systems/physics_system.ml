@@ -10,7 +10,7 @@ let update world =
   Hashtbl.iter (fun entity movable ->
     (match Hashtbl.find_opt world.state.collider_store entity with
     | Some collider when collider.weight < Float.infinity ->
-        movable.force <- Vector.add movable.force gravity
+        movable.force <- Vector.add movable.force (Vector.scale gravity movable.gravity_scale)
     | _ -> ());
     
     movable.velocity <- Vector.add movable.velocity (Vector.scale movable.force dt);
