@@ -5,25 +5,27 @@ open Resources
 open Entity_creator
 
 let setup world = 
-  let width, height = (1000, 1000) in
+  let width, height = (800, 600) in
   let width_f = float_of_int width in
   let height_f = float_of_int height in
+  let height_w = 10000.0 in
+  let width_w = 10000.0 in
   let wall_thickness = 10.0 in
 
 
   (* Top *)
   (*ignore @@ create_wall world 0.0 0.0 width_f wall_thickness;*)
   (* Bottom *)
-  ignore @@ create_wall world 0.0 (height_f -. wall_thickness) width_f wall_thickness;
+  ignore @@ create_wall world 0.0 (height_w -. wall_thickness) width_w wall_thickness;
   (* Left *)
-  ignore @@ create_wall world 0.0 0.0 10.0 height_f;
+  ignore @@ create_wall world 0.0 0.0 10.0 height_w;
   (* Right *)
-  ignore @@ create_wall world (width_f -. wall_thickness) 0.0 10.0 height_f;
+  ignore @@ create_wall world (width_w -. wall_thickness) 0.0 10.0 height_w;
 
   let player = create_player world 100.0 100.0 "color_witch" (Some "red") in
-  ignore @@ create_target_dummy world 200.0 100.0 "ink_master" None;
+  let target_dummy = create_target_dummy world 200.0 100.0 "ink_master" None in
 
-  ignore @@ create_camera world (Some player) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.5;
+  ignore @@ create_camera world (Some [target_dummy;player]) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.5;
   ()
 
 
@@ -73,7 +75,7 @@ let update world elapsed =
     None
 
 let run keys =
-  let window = Gfx.create "game_canvas:800x600:" in
+  let window = Gfx.create "game_canvas:1920x1080:" in
   let world = World.create window keys in
 
   (* This is basically just doing Gfx.load_file and Gfx.load_image and putting it in a tuple *)

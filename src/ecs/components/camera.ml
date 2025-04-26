@@ -1,7 +1,7 @@
 type t = {
   mutable zoom: float;
-  mutable width: float;
-  mutable height: float;
-  mutable target: Entity.t option;
+  width: float;
+  height: float;
+  mutable target: Entity.t list option;
   mutable offset: Vector.t; (* entity pos + offset = camera pos *)
 }
