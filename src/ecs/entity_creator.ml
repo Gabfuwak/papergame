@@ -211,3 +211,68 @@ let create_wall world x y width height =
   Hashtbl.add world.state.drawable_store id drawable;
   
   id
+
+
+let create_projectile world x y animation_key direction source_entity =
+  let entity = Entity.create() in
+  
+  (* Add position component *)
+  let position = { Position.pos = Vector.create x y } in
+  Hashtbl.add world.state.position_store entity position;
+  
+  (* Add movable component with initial velocity *)
+  let speed = 400.0 in (* Adjust projectile speed as needed *)
+  let movable = { 
+    Movable.velocity = Vector.create (direction *. speed) 0.0;
+    Movable.force = Vector.create 0.0 0.0;
+  } in
+  Hashtbl.add world.state.movable_store entity movable;
+  
+  (* Add drawable component *)
+  let texture = 
+    match Hashtbl.find_opt world.resources.textures animation_key with
+    | Some tex -> tex
+    | None -> 
+        Gfx.debug "Missing projectile texture: %s" animation_key;
+        Hashtbl.find world.resources.textures "missing"
+  in
+  
+  let drawable = { 
+    Drawable.texture = texture;
+  } in
+  Hashtbl.add world.state.drawable_store entity drawable;
+  
+  (* Add collider component *)
+  let size = 
+    match texture with
+    | Image i -> Gfx.surface_size i.surface
+    | Animation a -> Gfx.surface_size a.frames.(0)
+    | _ -> (32, 32) (* Default size *)
+  in
+  
+  let width, height = size in
+  let collider = { 
+    Collider.boxes = [|{
+      Collider.boxtype = "attack";
+      Collider.pos = Vector.create 0.0 0.0;
+      Collider.width = float_of_int width;
+      Collider.height = float_of_int height;
+    }|];
+    Collider.weight = 0.0; (* Projectiles have no weight *)
+    Collider.origin_pos = position.Position.pos;
+  } in
+  Hashtbl.add world.state.collider_store entity collider;
+  
+  (* Add projectile component *)
+  let projectile = {
+    Projectile.lifetime = 1.0; (* 5 seconds lifetime *)
+    Projectile.damage = 10;    (* Base damage *)
+    Projectile.source_entity = source_entity;
+    Projectile.projectile_type = "paint";
+    Projectile.direction = direction;
+    Projectile.destroyed_on_hit = true;
+  } in
+  Hashtbl.add world.state.projectile_store entity projectile;
+  
+  (* Return the entity ID *)
+  entity

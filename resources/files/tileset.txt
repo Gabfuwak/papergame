@@ -137,6 +137,11 @@ hitbox:characters/color_witch/yellow/jump/prep:2:vulnerable:177:198:183:207
 hitbox:characters/color_witch/yellow/jump/prep:3:vulnerable:177:198:183:207
 hitbox:characters/color_witch/yellow/jump/prep:4:vulnerable:177:198:183:207
 hitbox:characters/color_witch/yellow/jump/prep:5:vulnerable:177:198:183:207
+anim:characters/color_witch/yellow/paint:6400:3450:200:150:4:12
+reference:characters/color_witch/blue/hit_fall:264:314
+hitbox:characters/color_witch/blue/hit_fall:1:vulnerable:165:151:215:230
+reference:characters/color_witch/blue/hit:337:324
+hitbox:characters/color_witch/blue/hit:1:vulnerable:166:112:234:272
 anim:characters/color_witch/yellow/idle:15712:500:450:480:1:12
 reference:characters/color_witch/yellow/idle:241:367
 hitbox:characters/color_witch/yellow/idle:1:vulnerable:176:137:134:267
@@ -216,6 +221,11 @@ hitbox:characters/color_witch/red/jump/prep:2:vulnerable:177:198:183:207
 hitbox:characters/color_witch/red/jump/prep:3:vulnerable:177:198:183:207
 hitbox:characters/color_witch/red/jump/prep:4:vulnerable:177:198:183:207
 hitbox:characters/color_witch/red/jump/prep:5:vulnerable:177:198:183:207
+anim:characters/color_witch/red/paint:7200:3450:200:150:4:12
+reference:characters/color_witch/blue/hit_fall:264:314
+hitbox:characters/color_witch/blue/hit_fall:1:vulnerable:165:151:215:230
+reference:characters/color_witch/blue/hit:337:324
+hitbox:characters/color_witch/blue/hit:1:vulnerable:166:112:234:272
 anim:characters/color_witch/red/idle:15712:980:450:480:1:12
 reference:characters/color_witch/red/idle:241:367
 hitbox:characters/color_witch/red/idle:1:vulnerable:176:137:134:267
@@ -295,6 +305,12 @@ hitbox:characters/color_witch/blue/jump/prep:2:vulnerable:177:198:183:207
 hitbox:characters/color_witch/blue/jump/prep:3:vulnerable:177:198:183:207
 hitbox:characters/color_witch/blue/jump/prep:4:vulnerable:177:198:183:207
 hitbox:characters/color_witch/blue/jump/prep:5:vulnerable:177:198:183:207
+anim:characters/color_witch/blue/paint:8000:3450:200:150:4:12
+reference:characters/color_witch/blue/paint:102:74
+hitbox:characters/color_witch/blue/paint:1:attack:25:36:158:75
+hitbox:characters/color_witch/blue/paint:2:attack:25:36:158:75
+hitbox:characters/color_witch/blue/paint:3:attack:25:36:158:75
+hitbox:characters/color_witch/blue/paint:4:attack:25:36:158:75
 anim:characters/color_witch/blue/idle:10350:1000:450:480:1:12
 reference:characters/color_witch/blue/idle:241:367
 hitbox:characters/color_witch/blue/idle:1:vulnerable:176:137:134:267

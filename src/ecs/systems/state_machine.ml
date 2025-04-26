@@ -8,6 +8,7 @@ open Collider
 open Drawable
 open World
 module Pos = Position
+open Attacks
 
 let is_key_pressed world key =
   let actual_key = 
@@ -357,14 +358,8 @@ let update_character entity character controllable position movable drawable dt 
     | Attacking {attack_type} -> 
         let curr_state = Attacking{attack_type=attack_type} in
         let state_changed = process_hit_transition world curr_state character movable drawable in
-        if not state_changed && attack_type == 0 && is_animation_complete drawable then(
-          ignore @@ process_idle_transition world curr_state character controllable movable drawable
-        )
-        else if not state_changed && attack_type == 1 && is_animation_complete drawable then(
-          if character.char_name == "ink_master" then(
-            let x_correction = if character.facing_right then 175.0 else -175.0 in
-            position.Pos.pos <- Vector.add (position.Pos.pos) (Vector.create x_correction 10.0);
-          );
+        if not state_changed && is_animation_complete drawable then(
+          ignore @@ Attacks.execute_attack world entity character position attack_type;
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
 

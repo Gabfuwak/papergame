@@ -42,6 +42,8 @@ let update world elapsed =
   (* systems *)
   (* Control_system.update world; *)
 
+  Projectile_system.update world;
+
   
   State_machine.update world;
 
@@ -111,7 +113,7 @@ let run keys =
             Gfx.debug "Slow frame: %.2f ms\n" world.dt
           )
           else(
-            Gfx.debug "Current approx fps: %f\n" (1000.0/.world.dt)
+            (*Gfx.debug "Current approx fps: %f\n" (1000.0/.world.dt)*)
           );
             result
 

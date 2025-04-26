@@ -82,8 +82,8 @@ let update world =
 
                   let calculated_zoom = calculate_zoom target_positions camera.width camera.height in
                   let eased_zoom = linear_easing camera.zoom calculated_zoom in
-                  camera.zoom <- eased_zoom;
-                  Gfx.debug "Current zoom: %f\n" camera.zoom
+                  camera.zoom <- eased_zoom
+                  (*Gfx.debug "Current zoom: %f\n" camera.zoom*)
             | None -> ())
        | _, _ -> ())
   | None -> ()

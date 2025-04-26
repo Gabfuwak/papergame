@@ -11,6 +11,7 @@ module WorldState = struct
     collider_store : (Entity.t, Collider.t) Hashtbl.t;
     camera_store : (Entity.t, Camera.t) Hashtbl.t;
     character_store : (Entity.t, State.Character.t) Hashtbl.t;
+    projectile_store : (int, Projectile.t) Hashtbl.t;
   }
   
   let create () = {
@@ -21,6 +22,7 @@ module WorldState = struct
     collider_store = Hashtbl.create 64;
     camera_store = Hashtbl.create 64;
     character_store = Hashtbl.create 64;
+    projectile_store = Hashtbl.create 64;
   }
 end
 
