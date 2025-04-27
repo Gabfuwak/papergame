@@ -146,6 +146,7 @@ anim:characters/color_witch/yellow/idle:15712:500:450:480:1:12
 reference:characters/color_witch/yellow/idle:241:367
 hitbox:characters/color_witch/yellow/idle:1:vulnerable:176:137:134:267
 anim:characters/color_witch/yellow/death:0:1880:480:400:10:12
+reference:characters/color_witch/yellow/death:273:326
 anim:characters/color_witch/yellow/run:14700:2660:400:350:4:12
 reference:characters/color_witch/yellow/run:217:286
 hitbox:characters/color_witch/yellow/run:1:vulnerable:108:124:247:216
@@ -227,6 +228,7 @@ anim:characters/color_witch/red/idle:15712:980:450:480:1:12
 reference:characters/color_witch/red/idle:241:367
 hitbox:characters/color_witch/red/idle:1:vulnerable:176:137:134:267
 anim:characters/color_witch/red/death:6300:2340:480:400:10:12
+reference:characters/color_witch/red/death:273:326
 anim:characters/color_witch/red/run:14700:3010:400:350:4:12
 reference:characters/color_witch/red/run:217:286
 hitbox:characters/color_witch/red/run:1:vulnerable:108:124:247:216
@@ -309,6 +311,7 @@ anim:characters/color_witch/blue/idle:10350:1000:450:480:1:12
 reference:characters/color_witch/blue/idle:241:367
 hitbox:characters/color_witch/blue/idle:1:vulnerable:176:137:134:267
 anim:characters/color_witch/blue/death:0:3140:480:400:10:12
+reference:characters/color_witch/blue/death:273:326
 anim:characters/color_witch/blue/run:13200:3360:400:350:4:12
 reference:characters/color_witch/blue/run:217:286
 hitbox:characters/color_witch/blue/run:1:vulnerable:108:124:247:216
@@ -357,6 +360,7 @@ tile:characters/color_witch/red/hit_fall:15660:1460:480:400
 reference:characters/color_witch/red/hit_fall:264:314
 hitbox:characters/color_witch/red/hit_fall:1:vulnerable:165:151:215:230
 tile:characters/color_witch/red/dead:14700:1860:480:400
+reference:characters/color_witch/red/dead:273:326
 tile:characters/color_witch/red/hit:15180:1860:480:400
 reference:characters/color_witch/red/hit:337:324
 hitbox:characters/color_witch/red/hit:1:vulnerable:166:112:234:272
@@ -370,6 +374,7 @@ tile:characters/color_witch/blue/hit_fall:15660:1860:480:400
 reference:characters/color_witch/blue/hit_fall:264:314
 hitbox:characters/color_witch/blue/hit_fall:1:vulnerable:165:151:215:230
 tile:characters/color_witch/blue/dead:14700:2260:480:400
+reference:characters/color_witch/blue/dead:273:326
 tile:characters/color_witch/blue/hit:15180:2260:480:400
 reference:characters/color_witch/blue/hit:337:324
 hitbox:characters/color_witch/blue/hit:1:vulnerable:166:112:234:272

@@ -295,6 +295,18 @@ let process_hit_transition world prev_state character movable drawable =
       false
     
 
+let process_death_transition world prev_state character movable drawable =
+  if character.health_points <= 0.0 && character.current_state <> Death && character.current_state <> Dead then (
+    movable.velocity <- Vector.zero;
+    transition_state world prev_state Death character drawable;
+    true
+  ) else
+    false
+
+let process_dead_transition world character drawable =
+  transition_state world Death Dead character drawable;
+  true
+
 
 let update_character entity character controllable position movable drawable dt world =
   character.time_in_state <- character.time_in_state +. dt;
@@ -368,18 +380,27 @@ let update_character entity character controllable position movable drawable dt 
 
     | Hit { stun_time; remaining_time; hit_vector } ->
         let new_remaining = remaining_time -. dt in
-        
+
         movable.force <- Vector.add movable.force hit_vector;
-        
-        if new_remaining <= 0.0 then
+
+        if character.health_points <= 0.0 then
+          (* If health is zero, transition to Death *)
+          transition_state world character.current_state Death character drawable
+        else if new_remaining <= 0.0 then
           if character.is_grounded then
             transition_state world character.current_state Idle character drawable
           else
             transition_state world character.current_state Falling character drawable
         else
-          transition_state world character.current_state 
-            (Hit { stun_time; remaining_time = new_remaining; hit_vector }) 
+          transition_state world character.current_state
+            (Hit { stun_time; remaining_time = new_remaining; hit_vector })
             character drawable
+    | Death ->
+      (* Death state just plays the death animation and then transitions to Dead *)
+      if is_animation_complete drawable then
+        ignore @@ process_dead_transition world character drawable;
+
+    | Dead -> ()
     | _ -> ());
 
    update_entity_hitboxes world entity character drawable

@@ -2,3 +2,4 @@ reference:characters/color_witch/red/hit_fall:264:314
 hitbox:characters/color_witch/red/hit_fall:1:vulnerable:165:151:215:230
 reference:characters/color_witch/red/hit:337:324
 hitbox:characters/color_witch/red/hit:1:vulnerable:166:112:234:272
+reference:characters/color_witch/red/dead:273:326

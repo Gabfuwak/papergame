@@ -24,7 +24,7 @@ let setup world =
   (* Right *)
   ignore @@ create_wall world (width_w -. wall_thickness) 0.0 10.0 height_w;
 
-  let target_dummy = create_target_dummy world 200.0 100.0 "ink_master" None in
+  let target_dummy = create_target_dummy world 200.0 100.0 "color_witch" (Some "blue") in
   let player = create_player world 100.0 100.0 "color_witch" (Some "red") in
 
   ignore @@ create_camera world (Some [target_dummy;player]) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.5;

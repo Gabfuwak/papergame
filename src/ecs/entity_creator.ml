@@ -112,7 +112,13 @@ let create_target_dummy world x y char_name variant =
   Hashtbl.add world.state.movable_store id movable;
   Hashtbl.add world.state.controllable_store id controllable;
   
-  let tex = "characters/ink_master/idle" in
+  let v = 
+    match variant with
+    | None -> ""
+    | Some s -> "/" ^ s
+  in
+
+  let tex = "characters/" ^ char_name ^ v ^ "/idle" in
   let texture =
     match Hashtbl.find_opt world.resources.textures tex with
     | Some text -> text
