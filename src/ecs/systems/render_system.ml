@@ -195,5 +195,3 @@ let update world =
       Gfx.set_color world.ctx (Gfx.color 255 0 255 255); (* Magenta *)
       Gfx.fill_rect world.ctx world.window_surface 0 0 screen_width screen_height;
   
-  (* Finalize rendering *)
-  Gfx.commit world.ctx

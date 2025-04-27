@@ -70,6 +70,9 @@ let update world elapsed =
 
   Camera_system.update world;
   Render_system.update world;
+  Healthbar_system.update world;
+  
+  Gfx.commit world.ctx;
 
   Gfx.debug "%!";
   

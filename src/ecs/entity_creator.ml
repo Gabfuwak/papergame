@@ -68,6 +68,8 @@ let create_player world x y char_name variant =
     Character.pending_hit = None;
     Character.char_name = char_name;
     Character.variant = variant;
+    Character.max_hp = 100.0;
+    Character.health_points = 75.0;
   } in
 
   Hashtbl.add world.state.character_store id character;
@@ -138,6 +140,8 @@ let create_target_dummy world x y char_name variant =
     Character.pending_hit = None;
     Character.char_name = char_name;
     Character.variant = variant;
+    Character.max_hp = 100.0;
+    Character.health_points = 100.0;
   } in
   
   Hashtbl.add world.state.character_store id character;
@@ -237,7 +241,7 @@ let create_projectile world x y animation_key direction source_entity =
         Gfx.debug "Missing projectile texture: %s" animation_key;
         Hashtbl.find world.resources.textures "missing"
   in
-  
+
   let drawable = { 
     Drawable.texture = texture;
   } in
@@ -264,9 +268,8 @@ let create_projectile world x y animation_key direction source_entity =
   } in
   Hashtbl.add world.state.collider_store entity collider;
   
-  (* Add projectile component *)
   let projectile = {
-    Projectile.lifetime = 1.0; (* 5 seconds lifetime *)
+    Projectile.lifetime = 1.0;
     Projectile.damage = 10;    (* Base damage *)
     Projectile.source_entity = source_entity;
     Projectile.projectile_type = "paint";

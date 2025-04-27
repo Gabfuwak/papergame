@@ -30,6 +30,8 @@ module Character = struct
     mutable pending_hit: (Vector.t * float) option;
     mutable char_name: string;
     mutable variant: string option;
+    mutable health_points: float;
+    mutable max_hp: float;
   }
 
 let get_animation_key char state = 
