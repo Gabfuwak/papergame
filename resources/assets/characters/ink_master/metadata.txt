@@ -1,0 +1,6 @@
+reference:characters/ink_master/death:0:270:296
+reference:characters/ink_master/dead:0:270:296
+reference:characters/ink_master/hit_fall:0:270:287
+hitbox:characters/ink_master/hit_fall:0:vulnerable:84:259:273:123
+reference:characters/ink_master/hit:0:253:296
+hitbox:characters/ink_master/hit:0:vulnerable:208:90:131:291
