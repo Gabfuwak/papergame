@@ -11,7 +11,8 @@ module Character = struct
     | Idle
     | Walking
     | Running
-    | Attacking of { attack_type: int}
+    | Attacking of { attack_type: int }
+    | AttackRecall of {attack_type:int }
     | Hit of { stun_time: float; remaining_time: float; hit_vector: Vector.t }
     | JumpPrep
     | Jumping
@@ -48,7 +49,10 @@ let get_animation_key char state =
   | Running -> "characters/" ^ char.char_name ^ v ^ "/run"
   | Attacking { attack_type = 0 } -> "characters/" ^ char.char_name ^ v ^ "/attack_forward"
   | Attacking { attack_type = 1 } -> "characters/" ^ char.char_name ^ v ^ "/attack_up"
+  | AttackRecall { attack_type = 0 } -> "characters/" ^ char.char_name ^ v ^ "/attack_forward_recall"
+  | AttackRecall { attack_type = 1 } -> "characters/" ^ char.char_name ^ v ^ "/attack_up_recall"
   | Attacking _ -> failwith "unreachable" (*to make the pattern exhaustive*)
+  | AttackRecall _ -> failwith "unreachable" (*to make the pattern exhaustive*)
   (* | Hit _ -> "characters/" ^ char_name ^ v ^ "/hit" *)
   | Hit _ -> "characters/" ^ char.char_name ^ v ^ "/jump/falling" (*placeholder*)
   | JumpPrep -> "characters/" ^ char.char_name ^ v ^ "/jump/prep"

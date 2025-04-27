@@ -280,6 +280,14 @@ let process_attack_transition world prev_state character controllable movable dr
   else
     false  
 
+let process_attack_recall_transition world previous_state character drawable =
+  (match previous_state with 
+  | Attacking {attack_type} ->
+    transition_state world previous_state (AttackRecall{attack_type=attack_type}) character drawable
+  | _ -> failwith "unreachable: src/ecs/systems/state_machine.ml"
+      );
+  true
+
 let process_hit_transition world prev_state character movable drawable =
   match character.pending_hit with
   | Some (hit_vector, stun_time) ->
@@ -375,9 +383,19 @@ let update_character entity character controllable position movable drawable dt 
         
         if not state_changed && is_animation_complete drawable then(
           ignore @@ Attacks.execute_attack world entity character position attack_type;
-          ignore @@ process_idle_transition world curr_state character controllable movable drawable
+          ignore @@ process_attack_recall_transition world curr_state character drawable
         )
 
+    | AttackRecall {attack_type} ->
+        let curr_state = AttackRecall{attack_type=attack_type} in
+        let state_changed = process_hit_transition world curr_state character movable drawable in
+        let state_changed = if not state_changed then process_attack_transition world curr_state character controllable movable drawable else state_changed in
+        let state_changed = if not state_changed then process_jump_prep_transition world curr_state character controllable movable drawable else state_changed in
+        let state_changed = if not state_changed then process_run_transition world curr_state character controllable movable drawable else state_changed in
+        if not state_changed && is_animation_complete drawable then(
+          ignore @@ process_idle_transition world curr_state character controllable movable drawable
+        )
+        
     | Hit { stun_time; remaining_time; hit_vector } ->
         let new_remaining = remaining_time -. dt in
 
