@@ -4,11 +4,3 @@ hitbox:[name]:2:vulnerable:232:136:178:258
 hitbox:[name]:3:vulnerable:232:136:178:258
 hitbox:[name]:4:vulnerable:232:136:178:258
 hitbox:[name]:5:vulnerable:232:136:178:258
-hitbox:[name]:6:vulnerable:276:128:183:264
-hitbox:[name]:6:attack:474:24:89:66
-hitbox:[name]:7:vulnerable:276:128:183:264
-hitbox:[name]:7:attack:474:24:89:66
-hitbox:[name]:8:vulnerable:276:128:183:264
-hitbox:[name]:8:attack:474:24:89:66
-hitbox:[name]:9:vulnerable:276:128:183:264
-hitbox:[name]:9:attack:474:24:89:66

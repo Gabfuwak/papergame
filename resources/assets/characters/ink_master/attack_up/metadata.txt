@@ -11,9 +11,4 @@ hitbox:[name]:9:vulnerable:402:163:231:262
 hitbox:[name]:9:attack:262:23:448:203
 hitbox:[name]:10:vulnerable:402:163:231:262
 hitbox:[name]:10:attack:262:23:448:203
-hitbox:[name]:11:vulnerable:402:163:231:262
-hitbox:[name]:12:vulnerable:402:163:231:262
-hitbox:[name]:13:vulnerable:402:163:231:262
-hitbox:[name]:14:vulnerable:402:163:231:262
-hitbox:[name]:15:vulnerable:402:163:231:262
 reference:[name]:340:330

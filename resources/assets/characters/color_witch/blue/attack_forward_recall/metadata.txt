@@ -1,0 +1,5 @@
+reference:[name]:265:348
+hitbox:[name]:1:vulnerable:209:156:223:238
+hitbox:[name]:2:vulnerable:209:156:223:238
+hitbox:[name]:3:vulnerable:209:156:223:238
+hitbox:[name]:4:vulnerable:209:156:223:238

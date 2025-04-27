@@ -7,8 +7,4 @@ hitbox:[name]:5:vulnerable:239:136:219:288
 hitbox:[name]:5:vulnerable:239:136:219:288
 hitbox:[name]:5:attack:105:141:541:196
 hitbox:[name]:6:vulnerable:239:136:219:288
-hitbox:[name]:7:vulnerable:239:136:219:288
-hitbox:[name]:8:vulnerable:239:136:219:288
-hitbox:[name]:9:vulnerable:239:136:219:288
-hitbox:[name]:10:vulnerable:239:136:219:288
 reference:[name]:366:340

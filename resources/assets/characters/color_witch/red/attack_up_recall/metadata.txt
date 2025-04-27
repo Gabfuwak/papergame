@@ -1,0 +1,9 @@
+reference:[name]:332:333
+hitbox:[name]:1:vulnerable:276:128:183:264
+hitbox:[name]:1:attack:474:24:89:66
+hitbox:[name]:2:vulnerable:276:128:183:264
+hitbox:[name]:2:attack:474:24:89:66
+hitbox:[name]:3:vulnerable:276:128:183:264
+hitbox:[name]:3:attack:474:24:89:66
+hitbox:[name]:4:vulnerable:276:128:183:264
+hitbox:[name]:4:attack:474:24:89:66
