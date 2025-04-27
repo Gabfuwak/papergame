@@ -104,10 +104,10 @@ let check_attack_collisions world =
     match Hashtbl.find_opt world.state.character_store attacker_id with
     | Some attacker_char ->
         (match attacker_char.current_state with
-        | Attacking { attack_type } ->  (* Removed attack_active check *)
+        | Attacking { attack_type } ->
             Hashtbl.iter (fun defender_id defender_collider ->
               (* Only check if this entity hasn't been hit already by this attack *)
-              if attacker_id <> defender_id && 
+              if attacker_id <> defender_id &&
                  not (List.mem defender_id attacker_char.hit_entities) then
                 match Hashtbl.find_opt world.state.character_store defender_id with
                 | Some defender_char ->
@@ -128,29 +128,8 @@ let check_attack_collisions world =
                                   begin
                                     collision_detected := true;
                                     
-                                    (* Add to hit list to prevent multiple hits *)
-                                    attacker_char.hit_entities <- defender_id :: attacker_char.hit_entities;
-                                    
-                                    (* Apply damage *)
-                                    let damage = match attack_type with
-                                      | 0 -> 10.0 (* Forward attack damage *)
-                                      | 1 -> 15.0 (* Up attack damage *)
-                                      | _ -> 5.0
-                                    in
-                                    
-                                    defender_char.health_points <- max 0.0 (defender_char.health_points -. damage);
-                                    
-                                    Gfx.debug "Character %d hit! Health: %.1f/%.1f" 
-                                      defender_id defender_char.health_points defender_char.max_hp;
-                                    
-                                    let base_x = if attacker_char.facing_right then 400.0 else -400.0 in
-                                    let hit_vector = match attack_type with
-                                      | 0 -> Vector.create base_x (-200.0) (* Forward attack *)
-                                      | 1 -> Vector.create (base_x *. 0.5) (-400.0) (* Up attack *)
-                                      | _ -> Vector.create base_x (-200.0)
-                                    in
-
-                                    defender_char.pending_hit <- Some (hit_vector, 0.5)
+                                    (* Call the attack handling function from Attacks module *)
+                                    Attacks.handle_attack_hit world attacker_char defender_id defender_char attack_type
                                   end
                             ) defender_collider.boxes
                         ) attacker_collider.boxes
@@ -159,7 +138,7 @@ let check_attack_collisions world =
             ) world.state.collider_store
         | _ -> ())
     | None -> ()
-  ) world.state.collider_store
+  ) world.state.collider_store 
 
 (* Main update function *)
 let update world =

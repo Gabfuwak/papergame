@@ -2,6 +2,7 @@ open Types
 open Vector
 open State.Character
 open World
+open Projectile
 open Entity_creator
 
 (* Helper for position corrections based on character and attack type *)
@@ -23,44 +24,91 @@ let apply_position_correction character position attack_type =
     (* Default case for other characters/attacks *)
     ()
 
-(* Create a paint projectile *)
 let create_paint_projectile world entity character position =
-  (* Calculate spawn position relative to character *)
   let dir_multiplier = if character.facing_right then 1.0 else -1.0 in
   let spawn_x = position.Position.pos.x +. (50.0 *. dir_multiplier) in
   let spawn_y = position.Position.pos.y -. 150.0 in
   
-  (* Get the variant for the projectile texture *)
   let variant = 
     match character.variant with
     | None -> ""
     | Some v -> "/" ^ v
   in
   
-  (* Get animation key for the projectile *)
   let animation_key = "characters/color_witch" ^ variant ^ "/paint" in
   
-  (* Create the projectile entity *)
   let projectile_id = create_projectile world spawn_x spawn_y animation_key dir_multiplier entity in
 
   projectile_id
   
-(* Function to handle attack execution *)
 let execute_attack world entity character position attack_type =
-  (* First apply any position corrections *)
   apply_position_correction character position attack_type;
-  
-  (* Then create projectiles or handle other attack effects *)
+
   match character.char_name, attack_type with
-  | "color_witch", 0 -> 
-    (* Forward paint attack - create projectile *)
+  | "color_witch", 0 ->
     ignore @@ create_paint_projectile world entity character position;
     true
   | "color_witch", 1 ->
-    (* Up paint attack - possibly different projectile behavior *)
-    (* For now, use the same projectile but with upward trajectory *)
-    ignore @@ create_paint_projectile world entity character position;
+    let projectile_id = create_paint_projectile world entity character position in
+    let proj_opt = Hashtbl.find_opt world.state.projectile_store projectile_id in
+    (match proj_opt with
+    | Some proj -> 
+        proj.damage <- proj.damage + 5;
+    | None -> ());
     true
-  | _ -> 
-    (* Other characters or attack types - no projectile created *)
+  | "ink_master", 0 ->
+    true
+  | "ink_master", 1 ->
+    true
+  | _ ->
     false
+
+
+let handle_attack_hit world attacker_char defender_id defender_char attack_type =
+  attacker_char.hit_entities <- defender_id :: attacker_char.hit_entities;
+
+  let damage = match attacker_char.char_name, attack_type with
+    | "color_witch", 0 -> 8.0  (* Color witch forward attack *)
+    | "color_witch", 1 -> 12.0 (* Color witch up attack *)
+    | "ink_master", 0 -> 10.0  (* Ink master forward attack *)
+    | "ink_master", 1 -> 15.0  (* Ink master up attack *)
+    | _, _ -> failwith "unreachable: src/ecs/utils/attacks.ml" 
+  in
+
+  defender_char.health_points <- max 0.0 (defender_char.health_points -. damage);
+
+  Gfx.debug "Character %d hit! Health: %.1f/%.1f"
+    defender_id defender_char.health_points defender_char.max_hp;
+
+  let base_x = if attacker_char.facing_right then 400.0 else -400.0 in
+  let hit_vector = match attacker_char.char_name, attack_type with
+    | "color_witch", 0 -> Vector.create base_x (-200.0) 
+    | "color_witch", 1 -> Vector.create (base_x *. 0.3) (-450.0)
+    | "ink_master", 0 -> Vector.create base_x (-200.0)
+    | "ink_master", 1 -> Vector.create (base_x *. 0.5) (-400.0)
+    | _, _ -> Vector.zero
+  in
+
+  let stun_time = match attacker_char.char_name, attack_type with
+    | "ink_master", 1 -> 0.7  (* Ink master up attack has longer stun *)
+    | _, _ -> 0.5            (* Default stun time *)
+  in
+  
+  defender_char.pending_hit <- Some (hit_vector, stun_time)
+
+let handle_projectile_hit world projectile target_id target_char =
+  (* Apply damage based on projectile properties *)
+  let damage = float_of_int projectile.damage in
+  
+  target_char.health_points <- max 0.0 (target_char.health_points -. damage);
+
+  Gfx.debug "Character %d hit by projectile! Health: %.1f/%.1f"
+    target_id target_char.health_points target_char.max_hp;
+
+  (* Calculate knockback vector based on projectile direction *)
+  let hit_direction = projectile.direction in
+  let base_x = if hit_direction > 0.0 then 300.0 else -300.0 in
+  let hit_vector = Vector.create base_x (-200.0) in
+
+  (* Set pending hit state on defender with appropriate stun time *)
+  target_char.pending_hit <- Some (hit_vector, 0.5)
