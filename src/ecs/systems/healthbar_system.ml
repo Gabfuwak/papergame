@@ -32,8 +32,6 @@ let render_health_bar world character index =
       Gfx.color 200 50 50 255  (* Red for low health *)
   in
   
-  Gfx.debug "Character health: %.1f / %.1f (%.2f%%)\n" 
-    character.health_points character.max_hp (clamped_percentage *. 100.0);
     
   let fill_width = int_of_float (clamped_percentage *. (health_bar_width -. 2.0 *. health_bar_border)) in
   Gfx.set_color world.ctx fill_color;

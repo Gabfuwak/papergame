@@ -4,30 +4,44 @@ open World
 open Resources
 open Entity_creator
 
-let setup world = 
+let setup world =
   let screen_w, screen_h = Gfx.get_window_size world.window in
   let aspect_ratio = (float_of_int screen_w)/.(float_of_int screen_h) in
-  let height_f = 600.0 in (*default world space height of camera view*)
+  let height_f = 600.0 in (* Default world space height of camera view *)
   let width_f = height_f *. aspect_ratio in
 
-  let height_w = 1000.0 in
-  let width_w = 10000.0 in
-  let wall_thickness = 10.0 in
+  let ground_level = 850.0 in
+  let platform_spacing = 800.0 in
+  let platform_height_variation = 400.0 in
+
+  ignore @@ create_platform world 0.0 ground_level "big";
+  ignore @@ create_platform world 1000.0 ground_level "big"; 
+  ignore @@ create_platform world 2000.0 ground_level "big";
+  ignore @@ create_platform world (-.1000.0) ground_level "big";
+
+  (* Some floating platforms *)
+  ignore @@ create_platform world (-.1000.0) (ground_level -. platform_height_variation) "small";
+  ignore @@ create_platform world 0.0 (ground_level -. platform_height_variation *. 1.5) "small";
+  ignore @@ create_platform world (500.0 +. platform_spacing *. 2.0) (ground_level -. platform_height_variation *. 0.8) "big";
+  ignore @@ create_platform world (500.0 +. platform_spacing *. 3.0) (ground_level -. platform_height_variation *. 1.2) "small";
 
 
-  (* Top *)
-  (*ignore @@ create_wall world 0.0 0.0 width_f wall_thickness;*)
-  (* Bottom *)
-  ignore @@ create_wall world 0.0 (height_w -. wall_thickness) width_w wall_thickness;
-  (* Left *)
-  ignore @@ create_wall world 0.0 0.0 10.0 height_w;
-  (* Right *)
-  ignore @@ create_wall world (width_w -. wall_thickness) 0.0 10.0 height_w;
 
-  let target_dummy = create_target_dummy world 200.0 100.0 "color_witch" (Some "blue") in
-  let player = create_player world 100.0 100.0 "color_witch" (Some "red") in
+  ignore @@ create_prop world 150.0 (ground_level -. 60.0) "bush_a";
+  ignore @@ create_prop world 400.0 (ground_level -. 80.0) "rock_b";
+  ignore @@ create_prop world 750.0 (ground_level -. 590.0) "tree_a";
+  ignore @@ create_prop world 1000.0 (ground_level -. 40.0) "flower_b";
+  ignore @@ create_prop world 1300.0 (ground_level -. 65.0) "bush_c";
 
-  ignore @@ create_camera world (Some [target_dummy;player]) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.5;
+
+  let player_start_y = ground_level -. 250.0 in
+  let target_start_y = ground_level -. 250.0 in
+
+  let target_dummy = create_target_dummy world 1500.0 target_start_y "ink_master" None in
+  let player = create_player world 0.0 player_start_y "color_witch" (Some "red") in
+
+  ignore @@ create_camera world (Some [player; target_dummy]) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.8; (* Zoomed out slightly *)
+
   ()
 
 

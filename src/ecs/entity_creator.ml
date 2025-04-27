@@ -194,6 +194,83 @@ let create_camera world target x y width height zoom =
   
   id
 
+let create_prop world x y prop_name =
+  let id = Entity.create () in
+
+  let tex_path = "decor/props/" ^ prop_name in
+
+  let position = { pos = Vector.create x y } in
+  Hashtbl.add world.state.position_store id position;
+
+  let texture =
+    match Hashtbl.find_opt world.resources.textures tex_path with
+    | Some tex -> tex
+    | None ->
+        Gfx.debug "Error: Prop texture '%s' not found. Using fallback color.\n" tex_path;
+        Color (Gfx.color 255 0 255 255) (* Bright pink fallback *)
+  in
+
+  let drawable = { texture = texture } in
+  Hashtbl.add world.state.drawable_store id drawable;
+
+  id
+
+let create_platform world x y platform_type =
+  let id = Entity.create () in
+
+  let tex_path_base = "decor/platforms/" in
+  let tex_path =
+    match platform_type with
+    | "big" -> tex_path_base ^ "big_platform"
+    | "small" -> tex_path_base ^ "small_platform"
+    | _ ->
+        Gfx.debug "Error: Invalid platform type '%s'. Using 'small_platform' as fallback.\n" platform_type;
+        tex_path_base ^ "small_platform"
+  in
+
+  let position = { pos = Vector.create x y } in
+  Hashtbl.add world.state.position_store id position;
+
+  let texture =
+    match Hashtbl.find_opt world.resources.textures tex_path with
+    | Some tex -> tex
+    | None ->
+        Gfx.debug "Error: Platform texture '%s' not found. Using fallback color.\n" tex_path;
+        Color (Gfx.color 128 128 128 255)
+  in
+  let drawable = { texture = texture } in
+  Hashtbl.add world.state.drawable_store id drawable;
+
+  let width, height =
+    match texture with
+    | Image i -> Gfx.surface_size i.surface
+    | Animation a ->
+        if Array.length a.frames > 0 then
+          Gfx.surface_size a.frames.(0)
+        else
+          (100, 20)
+    | Color _ ->
+        match platform_type with
+         | "big" -> (300, 50)
+         | "small" -> (150, 40)
+         | _ -> (150, 40) 
+  in
+
+  let hitbox = {
+    boxtype = "vulnerable"; 
+    pos = Vector.create 0.0 0.0;
+    width = float_of_int width;
+    height = float_of_int height;
+  } in
+  let collider = {
+    origin_pos = position.pos; 
+    boxes = [| hitbox |];
+    weight = Float.infinity;
+  } in
+  Hashtbl.add world.state.collider_store id collider;
+
+  id
+
 
 let create_wall world x y width height =
   let id = Entity.create() in
