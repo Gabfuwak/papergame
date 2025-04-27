@@ -45,7 +45,7 @@ let check_collision_for_projectile world projectile_id projectile projectile_col
                     let base_x = if hit_direction > 0.0 then 300.0 else -300.0 in
                     let hit_vector = Vector.create base_x (-200.0) in
                     
-                    target_char.pending_hit <- Some (hit_vector, 0.5);
+                    target_char.pending_hit <- Some (hit_vector, 25.0);
                     
                     (* Mark projectile for deletion if it should be destroyed on hit *)
                     if projectile.destroyed_on_hit then

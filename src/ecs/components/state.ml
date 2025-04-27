@@ -18,6 +18,7 @@ module Character = struct
     | JumpTop
     | Falling
     | JumpRecall
+    | Death
     | Dead
 
   type t = {
@@ -32,6 +33,7 @@ module Character = struct
     mutable variant: string option;
     mutable health_points: float;
     mutable max_hp: float;
+    mutable hit_entities: int list;
   }
 
 let get_animation_key char state = 
@@ -55,4 +57,5 @@ let get_animation_key char state =
   | Falling -> "characters/" ^ char.char_name ^ v ^ "/jump/falling" 
   | JumpRecall -> "characters/" ^ char.char_name ^ v ^ "/jump/recall" 
   | Dead -> "characters/" ^ char.char_name ^ v ^ "/dead"
+  | Death -> "characters/" ^ char.char_name ^ v ^ "/death"
 end

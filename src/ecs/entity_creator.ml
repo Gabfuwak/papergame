@@ -54,7 +54,7 @@ let create_player world x y char_name variant =
 
   let stats = {
     Character.air_control = 200.0;
-    Character.running_speed = 200.0;
+    Character.running_speed = 800.0;
     Character.jump_force = 800.0;
   } in
 
@@ -70,6 +70,7 @@ let create_player world x y char_name variant =
     Character.variant = variant;
     Character.max_hp = 100.0;
     Character.health_points = 75.0;
+    Character.hit_entities = [];
   } in
 
   Hashtbl.add world.state.character_store id character;
@@ -142,6 +143,7 @@ let create_target_dummy world x y char_name variant =
     Character.variant = variant;
     Character.max_hp = 100.0;
     Character.health_points = 100.0;
+    Character.hit_entities = [];
   } in
   
   Hashtbl.add world.state.character_store id character;
@@ -225,7 +227,7 @@ let create_projectile world x y animation_key direction source_entity =
   Hashtbl.add world.state.position_store entity position;
   
   (* Add movable component with initial velocity *)
-  let speed = 400.0 in (* Adjust projectile speed as needed *)
+  let speed = 1200.0 in (* Adjust projectile speed as needed *)
   let movable = { 
     velocity = Vector.create (direction *. speed) 0.0;
     force = Vector.create 0.0 0.0;

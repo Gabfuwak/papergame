@@ -24,8 +24,8 @@ let setup world =
   (* Right *)
   ignore @@ create_wall world (width_w -. wall_thickness) 0.0 10.0 height_w;
 
-  let player = create_player world 100.0 100.0 "color_witch" (Some "red") in
   let target_dummy = create_target_dummy world 200.0 100.0 "ink_master" None in
+  let player = create_player world 100.0 100.0 "color_witch" (Some "red") in
 
   ignore @@ create_camera world (Some [target_dummy;player]) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.5;
   ()
@@ -67,6 +67,7 @@ let update world elapsed =
     world.dt <- original_dt;
   done;
 
+  Hit_system.update world;
 
   Camera_system.update world;
   Render_system.update world;

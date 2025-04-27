@@ -267,17 +267,19 @@ let process_attack_transition world prev_state character controllable movable dr
   let attack_up_state = Attacking {attack_type = 1} in
   if is_action_made world attack_forward_control controllable then(
     movable.velocity.x <- 0.0;
+    character.hit_entities <- []; (* Reset hit entities list *)
     transition_state world prev_state attack_forward_state character drawable;
     true
   )
   else if is_action_made world attack_up_control controllable then (
     movable.velocity.x <- 0.0;
+    character.hit_entities <- []; (* Reset hit entities list *)
     transition_state world prev_state attack_up_state character drawable;
     true
   )
   else
-    false
-  
+    false  
+
 let process_hit_transition world prev_state character movable drawable =
   match character.pending_hit with
   | Some (hit_vector, stun_time) ->
@@ -355,9 +357,10 @@ let update_character entity character controllable position movable drawable dt 
     if not state_changed && is_animation_complete drawable then(
         ignore @@ process_ground_transition world character controllable movable position drawable;
       )
-    | Attacking {attack_type} -> 
+    | Attacking {attack_type} ->
         let curr_state = Attacking{attack_type=attack_type} in
         let state_changed = process_hit_transition world curr_state character movable drawable in
+        
         if not state_changed && is_animation_complete drawable then(
           ignore @@ Attacks.execute_attack world entity character position attack_type;
           ignore @@ process_idle_transition world curr_state character controllable movable drawable

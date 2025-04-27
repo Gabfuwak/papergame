@@ -104,9 +104,11 @@ let check_attack_collisions world =
     match Hashtbl.find_opt world.state.character_store attacker_id with
     | Some attacker_char ->
         (match attacker_char.current_state with
-        | Attacking { attack_type } ->
+        | Attacking { attack_type } ->  (* Removed attack_active check *)
             Hashtbl.iter (fun defender_id defender_collider ->
-              if attacker_id <> defender_id then
+              (* Only check if this entity hasn't been hit already by this attack *)
+              if attacker_id <> defender_id && 
+                 not (List.mem defender_id attacker_char.hit_entities) then
                 match Hashtbl.find_opt world.state.character_store defender_id with
                 | Some defender_char ->
                     (match defender_char.current_state with
@@ -125,7 +127,22 @@ let check_attack_collisions world =
                                     vulnerable_box_pos vulnerable_box.width vulnerable_box.height then
                                   begin
                                     collision_detected := true;
-
+                                    
+                                    (* Add to hit list to prevent multiple hits *)
+                                    attacker_char.hit_entities <- defender_id :: attacker_char.hit_entities;
+                                    
+                                    (* Apply damage *)
+                                    let damage = match attack_type with
+                                      | 0 -> 10.0 (* Forward attack damage *)
+                                      | 1 -> 15.0 (* Up attack damage *)
+                                      | _ -> 5.0
+                                    in
+                                    
+                                    defender_char.health_points <- max 0.0 (defender_char.health_points -. damage);
+                                    
+                                    Gfx.debug "Character %d hit! Health: %.1f/%.1f" 
+                                      defender_id defender_char.health_points defender_char.max_hp;
+                                    
                                     let base_x = if attacker_char.facing_right then 400.0 else -400.0 in
                                     let hit_vector = match attack_type with
                                       | 0 -> Vector.create base_x (-200.0) (* Forward attack *)
