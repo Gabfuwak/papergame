@@ -19,7 +19,6 @@ let setup world =
   ignore @@ create_platform world 2000.0 ground_level "big";
   ignore @@ create_platform world (-.1000.0) ground_level "big";
 
-  (* Some floating platforms *)
   ignore @@ create_platform world (-.1000.0) (ground_level -. platform_height_variation) "small";
   ignore @@ create_platform world 0.0 (ground_level -. platform_height_variation *. 1.5) "small";
   ignore @@ create_platform world (500.0 +. platform_spacing *. 2.0) (ground_level -. platform_height_variation *. 0.8) "big";
@@ -34,13 +33,13 @@ let setup world =
   ignore @@ create_prop world 1300.0 (ground_level -. 65.0) "bush_c";
 
 
-  let player_start_y = ground_level -. 250.0 in
-  let target_start_y = ground_level -. 250.0 in
+  let player1_start_y = ground_level -. 250.0 in
+  let player2_start_y = ground_level -. 250.0 in
 
-  let target_dummy = create_target_dummy world 1500.0 target_start_y "ink_master" None in
-  let player = create_player world 0.0 player_start_y "color_witch" (Some "red") in
+  let player1 = create_player world 0.0 player1_start_y "color_witch" (Some "red") ZQSD_Controls in
+  let player2 = create_player world 1500.0 player2_start_y "ink_master" None IJKL_Controls in
 
-  ignore @@ create_camera world (Some [player; target_dummy]) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.8; (* Zoomed out slightly *)
+  ignore @@ create_camera world (Some [player1; player2]) (width_f /. 2.0) (height_f /. 2.0) width_f height_f 0.8; (* Zoomed out slightly *)
 
   ()
 
@@ -97,8 +96,8 @@ let update world elapsed =
     None
 
 let run keys =
-  let screen_h = 1000 in
-  let screen_w = 1000 in
+  let screen_h = 1080 in
+  let screen_w = 1920 in
   let window = Gfx.create ("game_canvas:"^ string_of_int screen_w ^"x"^string_of_int screen_h^":") in
   let world = World.create window keys in
 

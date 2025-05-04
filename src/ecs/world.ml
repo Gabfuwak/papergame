@@ -61,12 +61,17 @@ let setup_keys k_names keys =
   Hashtbl.add k_names "space" " ";
   Hashtbl.add k_names "s" "s";
   Hashtbl.add k_names "z" "z";
+  Hashtbl.add k_names "q" "q";
   Hashtbl.add k_names "i" "i";
   Hashtbl.add k_names "j" "j";
   Hashtbl.add k_names "k" "k";
   Hashtbl.add k_names "l" "l";
   Hashtbl.add k_names "a" "a";
-  Hashtbl.add k_names "e" "e"
+  Hashtbl.add k_names "e" "e";
+  Hashtbl.add k_names "d" "d";
+  Hashtbl.add k_names "u" "u";
+  Hashtbl.add k_names "m" "m";
+  Hashtbl.add k_names "o" "o"
 
 let create window keys = 
   let context = Gfx.get_context window in

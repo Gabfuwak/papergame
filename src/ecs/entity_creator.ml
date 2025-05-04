@@ -10,20 +10,41 @@ open Drawable
 open Camera
 open Vector
 
-let create_player world x y char_name variant =
+type control_scheme =
+  | ZQSD_Controls
+  | IJKL_Controls
+
+let create_controls scheme =
+    let controls = Hashtbl.create 10 in
+    let attack_forward_control = Attack {attack_type = 0} in
+    let attack_up_control = Attack {attack_type = 1} in
+
+
+    match scheme with
+  | ZQSD_Controls ->
+      Hashtbl.add controls Up "z";
+      Hashtbl.add controls Down "s";
+      Hashtbl.add controls Left "q";
+      Hashtbl.add controls Right "d";
+      Hashtbl.add controls Jump "space";
+      Hashtbl.add controls attack_forward_control "a";
+      Hashtbl.add controls attack_up_control "e";
+      controls
+  | IJKL_Controls ->
+      Hashtbl.add controls Up "i";
+      Hashtbl.add controls Down "k";
+      Hashtbl.add controls Left "j";
+      Hashtbl.add controls Right "l";
+      Hashtbl.add controls Jump "m";
+      Hashtbl.add controls attack_forward_control "u";
+      Hashtbl.add controls attack_up_control "o";
+      controls
+
+let create_player world x y char_name variant scheme =
   let id = Entity.create () in
   let position = { pos = Vector.create x y } in
   let movable = { velocity = Vector.create 0.0 0.0; force = Vector.create 0.0 0.0; gravity_scale = 1.0 } in
-  let controls = Hashtbl.create 10 in
-  let attack_forward_control = Attack {attack_type = 0} in
-  let attack_up_control = Attack {attack_type = 1} in
-  Hashtbl.add controls Up "up";
-  Hashtbl.add controls Down "down";
-  Hashtbl.add controls Left "left";
-  Hashtbl.add controls Right "right";
-  Hashtbl.add controls Jump "space";
-  Hashtbl.add controls attack_forward_control "a";
-  Hashtbl.add controls attack_up_control "e";
+  let controls = create_controls scheme in
   let controllable = {controls = controls} in
   
   Hashtbl.add world.state.position_store id position;

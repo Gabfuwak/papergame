@@ -18,7 +18,7 @@ let apply_position_correction character position attack_type =
     (* No correction needed *)
     ()
   | "ink_master", 1 -> (* up attack *)
-    let x_correction = if character.facing_right then 175.0 else -175.0 in
+    let x_correction = if character.facing_right then 175.0 else -.175.0 in
     position.Position.pos <- Vector.add position.Position.pos (Vector.create x_correction 10.0)
   | _ -> 
     (* Default case for other characters/attacks *)
@@ -42,7 +42,6 @@ let create_paint_projectile world entity character position =
   projectile_id
   
 let execute_attack world entity character position attack_type =
-  apply_position_correction character position attack_type;
 
   match character.char_name, attack_type with
   | "color_witch", 0 ->

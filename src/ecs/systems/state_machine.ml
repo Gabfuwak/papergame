@@ -393,6 +393,7 @@ let update_character entity character controllable position movable drawable dt 
         let state_changed = if not state_changed then process_jump_prep_transition world curr_state character controllable movable drawable else state_changed in
         let state_changed = if not state_changed then process_run_transition world curr_state character controllable movable drawable else state_changed in
         if not state_changed && is_animation_complete drawable then(
+          apply_position_correction character position attack_type;
           ignore @@ process_idle_transition world curr_state character controllable movable drawable
         )
         

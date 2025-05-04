@@ -1,8 +1,8 @@
-anim:decor/platforms/big_platform:0:9082:1031:92:4:2
-anim:decor/platforms/small_platform:4124:9082:530:92:4:2
+anim:decor/platforms/big_platform:0:9082:1031:92:4:1
+anim:decor/platforms/small_platform:4124:9082:530:92:4:1
 anim:gui/main_menu/training_button:6400:8942:346:113:4:12
 anim:gui/main_menu/play_button:6400:9055:346:113:4:12
-anim:characters/ink_master/attack_up_recall:2555:0:800:500:5:12
+anim:characters/ink_master/attack_up_recall:2555:0:800:500:5:24
 hitbox:characters/ink_master/attack_up_recall:1:vulnerable:402:163:231:262
 hitbox:characters/ink_master/attack_up_recall:2:vulnerable:402:163:231:262
 hitbox:characters/ink_master/attack_up_recall:3:vulnerable:402:163:231:262
@@ -55,7 +55,7 @@ hitbox:characters/ink_master/jump/recall:4:vulnerable:188:166:164:318
 hitbox:characters/ink_master/jump/recall:5:vulnerable:201:173:156:310
 hitbox:characters/ink_master/jump/recall:6:vulnerable:201:175:161:308
 hitbox:characters/ink_master/jump/recall:7:vulnerable:206:175:160:310
-anim:characters/ink_master/jump/prep:3600:1232:400:500:4:12
+anim:characters/ink_master/jump/prep:3600:1232:400:500:4:24
 reference:characters/ink_master/jump/prep:240:380
 hitbox:characters/ink_master/jump/prep:1:vulnerable:137:214:231:274
 hitbox:characters/ink_master/jump/prep:2:vulnerable:137:214:231:274
@@ -140,7 +140,7 @@ hitbox:characters/color_witch/yellow/jump/recall:2:vulnerable:215:214:168:190
 hitbox:characters/color_witch/yellow/jump/recall:3:vulnerable:225:192:132:212
 hitbox:characters/color_witch/yellow/jump/recall:4:vulnerable:217:188:119:217
 hitbox:characters/color_witch/yellow/jump/recall:5:vulnerable:182:140:137:262
-anim:characters/color_witch/yellow/jump/prep:4400:2232:450:480:5:12
+anim:characters/color_witch/yellow/jump/prep:4400:2232:450:480:5:24
 reference:characters/color_witch/yellow/jump/prep:241:360
 hitbox:characters/color_witch/yellow/jump/prep:1:vulnerable:174:153:139:251
 hitbox:characters/color_witch/yellow/jump/prep:2:vulnerable:177:198:183:207
@@ -226,7 +226,7 @@ hitbox:characters/color_witch/red/jump/recall:2:vulnerable:215:214:168:190
 hitbox:characters/color_witch/red/jump/recall:3:vulnerable:225:192:132:212
 hitbox:characters/color_witch/red/jump/recall:4:vulnerable:217:188:119:217
 hitbox:characters/color_witch/red/jump/recall:5:vulnerable:182:140:137:262
-anim:characters/color_witch/red/jump/prep:4400:2712:450:480:5:12
+anim:characters/color_witch/red/jump/prep:4400:2712:450:480:5:24
 reference:characters/color_witch/red/jump/prep:241:360
 hitbox:characters/color_witch/red/jump/prep:1:vulnerable:174:153:139:251
 hitbox:characters/color_witch/red/jump/prep:2:vulnerable:177:198:183:207
@@ -312,7 +312,7 @@ hitbox:characters/color_witch/blue/jump/recall:2:vulnerable:215:214:168:190
 hitbox:characters/color_witch/blue/jump/recall:3:vulnerable:225:192:132:212
 hitbox:characters/color_witch/blue/jump/recall:4:vulnerable:217:188:119:217
 hitbox:characters/color_witch/blue/jump/recall:5:vulnerable:182:140:137:262
-anim:characters/color_witch/blue/jump/prep:2250:3192:450:480:5:12
+anim:characters/color_witch/blue/jump/prep:2250:3192:450:480:5:24
 reference:characters/color_witch/blue/jump/prep:258:347
 hitbox:characters/color_witch/blue/jump/prep:1:vulnerable:174:153:139:251
 hitbox:characters/color_witch/blue/jump/prep:2:vulnerable:177:198:183:207
