@@ -323,7 +323,7 @@ let create_wall world x y width height =
   id
 
 
-let create_projectile world x y animation_key direction source_entity =
+let create_projectile world x y animation_key direction source_entity gravity_scale =
   let entity = Entity.create() in
   
   (* Add position component *)
@@ -335,7 +335,7 @@ let create_projectile world x y animation_key direction source_entity =
   let movable = { 
     velocity = Vector.create (direction *. speed) 0.0;
     force = Vector.create 0.0 0.0;
-    gravity_scale = 0.0;
+    gravity_scale = gravity_scale;
   } in
   Hashtbl.add world.state.movable_store entity movable;
   

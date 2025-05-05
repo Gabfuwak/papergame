@@ -24,7 +24,7 @@ let apply_position_correction character position attack_type =
     (* Default case for other characters/attacks *)
     ()
 
-let create_paint_projectile world entity character position =
+let create_paint_projectile world entity character position gravity_scale =
   let dir_multiplier = if character.facing_right then 1.0 else -1.0 in
   let spawn_x = position.Position.pos.x +. (50.0 *. dir_multiplier) in
   let spawn_y = position.Position.pos.y -. 150.0 in
@@ -37,7 +37,7 @@ let create_paint_projectile world entity character position =
   
   let animation_key = "characters/color_witch" ^ variant ^ "/paint" in
   
-  let projectile_id = create_projectile world spawn_x spawn_y animation_key dir_multiplier entity in
+  let projectile_id = create_projectile world spawn_x spawn_y animation_key dir_multiplier entity gravity_scale in
 
   projectile_id
   
@@ -45,10 +45,10 @@ let execute_attack world entity character position attack_type =
 
   match character.char_name, attack_type with
   | "color_witch", 0 ->
-    ignore @@ create_paint_projectile world entity character position;
+    ignore @@ create_paint_projectile world entity character position 0.0;
     true
   | "color_witch", 1 ->
-    let projectile_id = create_paint_projectile world entity character position in
+    let projectile_id = create_paint_projectile world entity character position 1.0 in
     let proj_opt = Hashtbl.find_opt world.state.projectile_store projectile_id in
     (match proj_opt with
     | Some proj -> 
